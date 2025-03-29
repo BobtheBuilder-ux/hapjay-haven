@@ -7,10 +7,17 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Menu } from "lucide-react";
+import AppointmentForm from "./AppointmentForm";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   // Add scroll event listener
   if (typeof window !== "undefined") {
@@ -50,9 +57,16 @@ const Navbar = () => {
           <Link to="/contact" className="font-medium hover:text-realestate-gold transition-colors">
             Contact
           </Link>
-          <Button asChild className="bg-realestate-navy hover:bg-realestate-navy/90">
-            <Link to="/admin">Admin Login</Link>
-          </Button>
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-realestate-navy hover:bg-realestate-navy/90">
+                Get in Touch Now
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[500px]">
+              <AppointmentForm onClose={() => setDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
         </nav>
 
         {/* Mobile Navigation */}
@@ -77,9 +91,16 @@ const Navbar = () => {
               <Link to="/contact" className="font-medium hover:text-realestate-gold transition-colors">
                 Contact
               </Link>
-              <Button asChild className="bg-realestate-navy hover:bg-realestate-navy/90 w-full">
-                <Link to="/admin">Admin Login</Link>
-              </Button>
+              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-realestate-navy hover:bg-realestate-navy/90 w-full">
+                    Get in Touch Now
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px]">
+                  <AppointmentForm onClose={() => setDialogOpen(false)} />
+                </DialogContent>
+              </Dialog>
             </div>
           </SheetContent>
         </Sheet>
