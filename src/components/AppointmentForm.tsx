@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CalendarIcon, Clock } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Select,
@@ -43,19 +43,45 @@ const AppointmentForm = ({ onClose }: { onClose: () => void }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Simulate appointment booking
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast({
-        title: "Appointment Scheduled!",
-        description: "We will contact you soon to confirm your appointment details.",
+    
+    // Prepare data for webhook
+    const webhookData = {
+      ...formData,
+      date: date ? format(date, "yyyy-MM-dd") : "",
+      submittedAt: new Date().toISOString()
+    };
+    
+    try {
+      const response = await fetch("https://hook.eu2.make.com/qnmoq9xpt3aud5cavnes1g6sk5o5dy6d", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(webhookData),
       });
-      onClose();
-    }, 1500);
+      
+      if (response.ok) {
+        toast({
+          title: "Appointment Scheduled!",
+          description: "We will contact you soon to confirm your appointment details.",
+        });
+        onClose();
+      } else {
+        throw new Error("Failed to submit form");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({
+        title: "Submission Error",
+        description: "There was a problem scheduling your appointment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const timeSlots = [
@@ -65,7 +91,7 @@ const AppointmentForm = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold text-realestate-navy mb-6">Schedule an Appointment</h2>
+      <h2 className="text-2xl font-bold text-[#4175FC] mb-6">Schedule an Appointment</h2>
       <p className="mb-6 text-gray-600">Fill out the form below to schedule a viewing or consultation with our team.</p>
       
       <form onSubmit={handleSubmit}>
@@ -147,6 +173,7 @@ const AppointmentForm = ({ onClose }: { onClose: () => void }) => {
                       date.getDay() === 6
                     );
                   }}
+                  className="pointer-events-auto"
                 />
               </PopoverContent>
             </Popover>
@@ -189,7 +216,7 @@ const AppointmentForm = ({ onClose }: { onClose: () => void }) => {
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-realestate-navy hover:bg-realestate-navy/90"
+              className="flex-1 bg-[#4175FC] hover:bg-[#4175FC]/90"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Submitting..." : "Schedule Appointment"}

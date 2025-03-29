@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import {
@@ -19,16 +19,21 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Add scroll event listener
-  if (typeof window !== "undefined") {
-    window.addEventListener("scroll", () => {
+  // Add scroll event listener with cleanup
+  useEffect(() => {
+    const handleScroll = () => {
       if (window.scrollY > 10) {
         setIsScrolled(true);
       } else {
         setIsScrolled(false);
       }
-    });
-  }
+    };
+    
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   return (
     <header
@@ -38,28 +43,28 @@ const Navbar = () => {
     >
       <div className="container-custom flex items-center justify-between">
         <Link to="/" className="flex items-center">
-          <h1 className="text-xl md:text-2xl font-bold text-realestate-navy">
+          <h1 className="text-xl md:text-2xl font-bold text-[#4175FC]">
             <span className="text-realestate-gold">Hapjay</span> Real Estate
           </h1>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-8">
-          <Link to="/" className="font-medium hover:text-realestate-gold transition-colors">
+          <Link to="/" className="font-medium hover:text-[#4175FC] transition-colors">
             Home
           </Link>
-          <Link to="/properties" className="font-medium hover:text-realestate-gold transition-colors">
+          <Link to="/properties" className="font-medium hover:text-[#4175FC] transition-colors">
             Properties
           </Link>
-          <Link to="/about" className="font-medium hover:text-realestate-gold transition-colors">
+          <Link to="/about" className="font-medium hover:text-[#4175FC] transition-colors">
             About
           </Link>
-          <Link to="/contact" className="font-medium hover:text-realestate-gold transition-colors">
+          <Link to="/contact" className="font-medium hover:text-[#4175FC] transition-colors">
             Contact
           </Link>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-realestate-navy hover:bg-realestate-navy/90">
+              <Button className="bg-[#4175FC] hover:bg-[#4175FC]/90">
                 Get in Touch Now
               </Button>
             </DialogTrigger>
@@ -79,21 +84,21 @@ const Navbar = () => {
           </SheetTrigger>
           <SheetContent>
             <div className="flex flex-col space-y-4 mt-8">
-              <Link to="/" className="font-medium hover:text-realestate-gold transition-colors">
+              <Link to="/" className="font-medium hover:text-[#4175FC] transition-colors">
                 Home
               </Link>
-              <Link to="/properties" className="font-medium hover:text-realestate-gold transition-colors">
+              <Link to="/properties" className="font-medium hover:text-[#4175FC] transition-colors">
                 Properties
               </Link>
-              <Link to="/about" className="font-medium hover:text-realestate-gold transition-colors">
+              <Link to="/about" className="font-medium hover:text-[#4175FC] transition-colors">
                 About
               </Link>
-              <Link to="/contact" className="font-medium hover:text-realestate-gold transition-colors">
+              <Link to="/contact" className="font-medium hover:text-[#4175FC] transition-colors">
                 Contact
               </Link>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-realestate-navy hover:bg-realestate-navy/90 w-full">
+                  <Button className="bg-[#4175FC] hover:bg-[#4175FC]/90 w-full">
                     Get in Touch Now
                   </Button>
                 </DialogTrigger>
