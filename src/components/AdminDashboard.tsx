@@ -4,8 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Home, User, DollarSign, Building, Calendar, Plus, List } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminDashboard = () => {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
 
   // Sample stats data for the dashboard
@@ -41,7 +43,7 @@ const AdminDashboard = () => {
   ];
 
   // Sample properties for the property management tab
-  const properties = [
+  const [properties, setProperties] = useState([
     {
       id: 1,
       title: "Modern Luxury Villa",
@@ -82,10 +84,10 @@ const AdminDashboard = () => {
       status: "Leased",
       type: "Rental"
     }
-  ];
+  ]);
 
   // Sample recent inquiries for the inquiries tab
-  const inquiries = [
+  const [inquiries, setInquiries] = useState([
     {
       id: 1,
       name: "John Doe",
@@ -122,7 +124,7 @@ const AdminDashboard = () => {
       date: "2023-06-12",
       status: "Contacted"
     }
-  ];
+  ]);
 
   // Sample upcoming appointments for the calendar tab
   const appointments = [
@@ -151,6 +153,70 @@ const AdminDashboard = () => {
       time: "11:00 AM"
     }
   ];
+
+  // Functions to handle button actions
+  const handleAddProperty = () => {
+    const newId = properties.length > 0 ? Math.max(...properties.map(p => p.id)) + 1 : 1;
+    const newProperty = {
+      id: newId,
+      title: `New Property ${newId}`,
+      location: "Los Angeles, CA",
+      price: "$0",
+      status: "Draft",
+      type: "Residential"
+    };
+    
+    setProperties([...properties, newProperty]);
+    toast({
+      title: "Property Added",
+      description: `New property '${newProperty.title}' has been added.`,
+    });
+    
+    // Switch to properties tab to show the new property
+    setActiveTab("properties");
+  };
+
+  const handleEditProperty = (id: number) => {
+    toast({
+      title: "Edit Property",
+      description: `You are now editing property #${id}.`,
+    });
+    // In a real app, this would open a property editing form/modal
+  };
+
+  const handleDeleteProperty = (id: number) => {
+    setProperties(properties.filter(property => property.id !== id));
+    toast({
+      title: "Property Deleted",
+      description: "The property has been removed from the system.",
+    });
+  };
+
+  const handleReplyInquiry = (id: number) => {
+    toast({
+      title: "Reply Sent",
+      description: `Response to inquiry #${id} has been sent.`,
+    });
+  };
+
+  const handleMarkResolved = (id: number) => {
+    setInquiries(inquiries.map(inquiry => 
+      inquiry.id === id ? { ...inquiry, status: "Resolved" } : inquiry
+    ));
+    
+    toast({
+      title: "Inquiry Resolved",
+      description: "The inquiry has been marked as resolved.",
+    });
+  };
+
+  const handleScheduleAppointment = () => {
+    toast({
+      title: "Schedule Appointment",
+      description: "The appointment scheduling form would open here.",
+    });
+    // In a real app, this would open an appointment scheduling form/modal
+  };
 
   return (
     <div className="bg-realestate-silver min-h-screen p-6">
@@ -192,7 +258,7 @@ const AdminDashboard = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle>Recent Properties</CardTitle>
-                    <Button size="sm" variant="outline" className="h-8">
+                    <Button size="sm" variant="outline" className="h-8" onClick={handleAddProperty}>
                       <Plus className="h-4 w-4 mr-1" />
                       Add Property
                     </Button>
@@ -240,6 +306,8 @@ const AdminDashboard = () => {
                               ? "bg-blue-100 text-blue-800" 
                               : inquiry.status === "Contacted" 
                               ? "bg-yellow-100 text-yellow-800" 
+                              : inquiry.status === "Resolved"
+                              ? "bg-gray-100 text-gray-800"
                               : "bg-green-100 text-green-800"
                           }`}>
                             {inquiry.status}
@@ -258,7 +326,7 @@ const AdminDashboard = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle>Upcoming Appointments</CardTitle>
-                    <Button size="sm" variant="outline" className="h-8">
+                    <Button size="sm" variant="outline" className="h-8" onClick={() => setActiveTab("calendar")}>
                       <Calendar className="h-4 w-4 mr-1" />
                       View Calendar
                     </Button>
@@ -270,7 +338,7 @@ const AdminDashboard = () => {
                       <Card key={appointment.id} className="border bg-gray-50">
                         <CardContent className="p-4">
                           <div className="flex items-center mb-2">
-                            <Calendar className="h-4 w-4 text-realestate-navy mr-2" />
+                            <Calendar className="h-4 w-4 text-[#4175FC] mr-2" />
                             <span className="text-sm font-medium">{appointment.date} • {appointment.time}</span>
                           </div>
                           <h4 className="font-semibold mb-1">{appointment.title}</h4>
@@ -291,7 +359,7 @@ const AdminDashboard = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle>Property Management</CardTitle>
-                  <Button size="sm" className="bg-realestate-navy">
+                  <Button size="sm" className="bg-[#4175FC]" onClick={handleAddProperty}>
                     <Plus className="h-4 w-4 mr-1" />
                     Add New Property
                   </Button>
@@ -325,16 +393,28 @@ const AdminDashboard = () => {
                                 ? "bg-green-100 text-green-800" 
                                 : property.status === "Pending" 
                                 ? "bg-yellow-100 text-yellow-800" 
+                                : property.status === "Draft"
+                                ? "bg-gray-100 text-gray-800"
                                 : "bg-blue-100 text-blue-800"
                             }`}>
                               {property.status}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-right">
-                            <Button variant="ghost" size="sm" className="h-8 px-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 px-2"
+                              onClick={() => handleEditProperty(property.id)}
+                            >
                               Edit
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 px-2 text-red-500">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 px-2 text-red-500"
+                              onClick={() => handleDeleteProperty(property.id)}
+                            >
                               Delete
                             </Button>
                           </td>
@@ -384,16 +464,29 @@ const AdminDashboard = () => {
                                 ? "bg-blue-100 text-blue-800" 
                                 : inquiry.status === "Contacted" 
                                 ? "bg-yellow-100 text-yellow-800" 
+                                : inquiry.status === "Resolved"
+                                ? "bg-gray-100 text-gray-800"
                                 : "bg-green-100 text-green-800"
                             }`}>
                               {inquiry.status}
                             </span>
                           </td>
                           <td className="py-3 px-4 text-right">
-                            <Button variant="ghost" size="sm" className="h-8 px-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 px-2"
+                              onClick={() => handleReplyInquiry(inquiry.id)}
+                            >
                               Reply
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-8 px-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 px-2"
+                              onClick={() => handleMarkResolved(inquiry.id)}
+                              disabled={inquiry.status === "Resolved"}
+                            >
                               Mark Resolved
                             </Button>
                           </td>
@@ -412,7 +505,7 @@ const AdminDashboard = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle>Appointment Calendar</CardTitle>
-                  <Button size="sm" className="bg-realestate-navy">
+                  <Button size="sm" className="bg-[#4175FC]" onClick={handleScheduleAppointment}>
                     <Plus className="h-4 w-4 mr-1" />
                     Schedule Appointment
                   </Button>
@@ -429,7 +522,7 @@ const AdminDashboard = () => {
                     <h4 className="font-medium">Upcoming Appointments:</h4>
                     {appointments.map((appointment) => (
                       <div key={appointment.id} className="bg-white p-4 rounded-md shadow-sm border flex items-center">
-                        <div className="bg-realestate-navy text-white rounded-md p-2 mr-4">
+                        <div className="bg-[#4175FC] text-white rounded-md p-2 mr-4">
                           <Calendar className="h-6 w-6" />
                         </div>
                         <div className="text-left">

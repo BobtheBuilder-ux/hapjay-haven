@@ -36,6 +36,17 @@ export const useAppointmentForm = (onClose: () => void) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.phone || !date || !formData.timeSlot) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsSubmitting(true);
     
     // Prepare data for webhook
@@ -54,13 +65,14 @@ export const useAppointmentForm = (onClose: () => void) => {
         body: JSON.stringify(webhookData),
       });
       
-      if (response.ok) {
+      if (response.ok || response.status === 200) {
         toast({
           title: "Appointment Scheduled!",
           description: "We will contact you soon to confirm your appointment details.",
         });
         onClose();
       } else {
+        console.error("Webhook response:", response.status, response.statusText);
         throw new Error("Failed to submit form");
       }
     } catch (error) {
