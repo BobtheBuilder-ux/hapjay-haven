@@ -16,10 +16,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 217 71% 22%;
+    --primary: 226 100% 22%; /* Hapjay dark blue */
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 47 100% 45%;
+    --secondary: 190 82% 47%; /* Hapjay light blue */
     --secondary-foreground: 222.2 47.4% 11.2%;
 
     --muted: 210 40% 96.1%;

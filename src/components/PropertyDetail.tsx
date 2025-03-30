@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Carousel,
   CarouselContent,
@@ -11,7 +11,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Bed, Bath, Square, Calendar, Home, Phone, Mail } from "lucide-react";
+import { 
+  MapPin, 
+  Bed, 
+  Bath, 
+  Square, 
+  Calendar, 
+  Home, 
+  Phone, 
+  Mail, 
+  Share, 
+  Heart,
+  HeartOff,
+  Printer
+} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import ContactSection from "./ContactSection";
 
 // Sample property data - in a real app this would come from an API
@@ -135,9 +149,19 @@ const properties = [
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const propertyId = parseInt(id || "1");
   const property = properties.find(p => p.id === propertyId) || properties[0];
   const [activeImage, setActiveImage] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    // Reset active image when property changes
+    setActiveImage(0);
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+  }, [propertyId]);
 
   // If property not found
   if (!property) {
@@ -145,12 +169,48 @@ const PropertyDetail = () => {
       <div className="container-custom py-12 text-center">
         <h2 className="text-2xl font-bold mb-4">Property Not Found</h2>
         <p className="mb-6">The property you're looking for doesn't exist or has been removed.</p>
-        <Button asChild>
+        <Button asChild className="bg-realestate-navy hover:bg-realestate-navy/90">
           <a href="/properties">Back to Properties</a>
         </Button>
       </div>
     );
   }
+
+  const handleFavoriteToggle = () => {
+    setIsFavorite(!isFavorite);
+    toast({
+      title: isFavorite ? "Removed from favorites" : "Added to favorites",
+      description: isFavorite ? "Property removed from your saved listings" : "Property saved to your favorites",
+    });
+  };
+
+  const handleShare = () => {
+    // In a real app, this would open a share dialog
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: "Link copied to clipboard",
+      description: "You can now share this property with others",
+    });
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleContactAgent = () => {
+    toast({
+      title: "Contact request sent",
+      description: `Your request to contact ${property.agent.name} has been received.`,
+    });
+  };
+
+  const handleScheduleViewing = () => {
+    // In a real app, this would open a scheduling form or redirect to a scheduling page
+    toast({
+      title: "Viewing request sent",
+      description: "We'll contact you soon to confirm your viewing time.",
+    });
+  };
 
   return (
     <div className="py-12 bg-realestate-silver">
@@ -165,9 +225,40 @@ const PropertyDetail = () => {
             </div>
           </div>
           
-          <div className="flex items-center text-gray-600 mb-2">
-            <MapPin className="h-5 w-5 mr-1" />
+          <div className="flex items-center text-gray-600 mb-4">
+            <MapPin className="h-5 w-5 mr-1 text-realestate-blue" />
             <span>{property.address}</span>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1 border-realestate-navy text-realestate-navy hover:bg-realestate-navy/10"
+              onClick={handleFavoriteToggle}
+            >
+              {isFavorite ? <HeartOff size={16} /> : <Heart size={16} />}
+              {isFavorite ? "Remove Favorite" : "Save"}
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1 border-realestate-navy text-realestate-navy hover:bg-realestate-navy/10"
+              onClick={handleShare}
+            >
+              <Share size={16} />
+              Share
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1 border-realestate-navy text-realestate-navy hover:bg-realestate-navy/10"
+              onClick={handlePrint}
+            >
+              <Printer size={16} />
+              Print
+            </Button>
           </div>
         </div>
         
@@ -187,8 +278,8 @@ const PropertyDetail = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            <CarouselPrevious className="border-realestate-navy text-realestate-navy hover:bg-realestate-navy/10" />
+            <CarouselNext className="border-realestate-navy text-realestate-navy hover:bg-realestate-navy/10" />
           </Carousel>
           
           {/* Thumbnail Gallery */}
@@ -215,10 +306,25 @@ const PropertyDetail = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <Tabs defaultValue="overview">
-              <TabsList className="mb-4">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="features">Features</TabsTrigger>
-                <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsList className="mb-4 bg-realestate-silver">
+                <TabsTrigger 
+                  value="overview" 
+                  className="data-[state=active]:bg-realestate-navy data-[state=active]:text-white"
+                >
+                  Overview
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="features"
+                  className="data-[state=active]:bg-realestate-navy data-[state=active]:text-white"
+                >
+                  Features
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="details"
+                  className="data-[state=active]:bg-realestate-navy data-[state=active]:text-white"
+                >
+                  Details
+                </TabsTrigger>
               </TabsList>
               
               <TabsContent value="overview" className="bg-white p-6 rounded-lg shadow-md">
@@ -247,6 +353,39 @@ const PropertyDetail = () => {
                     <span className="text-sm text-gray-500">Lot Size</span>
                   </div>
                 </div>
+
+                {/* Similar properties suggestion */}
+                <div className="mt-8 pt-6 border-t">
+                  <h3 className="text-xl font-semibold mb-4">Similar Properties You Might Like</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {properties.filter(p => p.id !== property.id).slice(0, 2).map(similarProperty => (
+                      <div 
+                        key={similarProperty.id} 
+                        className="flex gap-3 p-3 rounded-lg bg-realestate-lightblue cursor-pointer hover:shadow-md transition-shadow"
+                        onClick={() => navigate(`/properties/${similarProperty.id}`)}
+                      >
+                        <div className="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden">
+                          <img 
+                            src={similarProperty.images[0]} 
+                            alt={similarProperty.title}
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-sm line-clamp-1">{similarProperty.title}</h4>
+                          <p className="text-realestate-navy font-semibold text-sm">{similarProperty.price}</p>
+                          <div className="flex items-center text-xs text-gray-600">
+                            <Bed className="h-3 w-3 mr-1" />
+                            <span>{similarProperty.beds}</span>
+                            <span className="mx-1">•</span>
+                            <Bath className="h-3 w-3 mr-1" />
+                            <span>{similarProperty.baths}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </TabsContent>
               
               <TabsContent value="features" className="bg-white p-6 rounded-lg shadow-md">
@@ -254,7 +393,7 @@ const PropertyDetail = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
                   {property.features.map((feature, index) => (
                     <div key={index} className="flex items-center">
-                      <div className="h-2 w-2 rounded-full bg-realestate-gold mr-2"></div>
+                      <div className="h-2 w-2 rounded-full bg-realestate-blue mr-2"></div>
                       <span>{feature}</span>
                     </div>
                   ))}
@@ -331,10 +470,17 @@ const PropertyDetail = () => {
                 </div>
               </div>
               <div className="mt-6 space-y-3">
-                <Button className="w-full bg-realestate-navy hover:bg-realestate-navy/90">
+                <Button 
+                  className="w-full bg-realestate-navy hover:bg-realestate-navy/90"
+                  onClick={handleScheduleViewing}
+                >
                   Schedule Viewing
                 </Button>
-                <Button variant="outline" className="w-full border-realestate-navy text-realestate-navy hover:bg-realestate-navy/10">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-realestate-navy text-realestate-navy hover:bg-realestate-navy/10"
+                  onClick={handleContactAgent}
+                >
                   Contact Agent
                 </Button>
               </div>
@@ -343,8 +489,48 @@ const PropertyDetail = () => {
             {/* Mortgage Calculator Placeholder */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-semibold mb-4">Mortgage Calculator</h3>
-              <div className="text-center p-4 bg-realestate-lightblue rounded-md">
-                <p className="text-gray-600">Mortgage calculator feature coming soon!</p>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Home Price</label>
+                  <input 
+                    type="text" 
+                    value={property.price}
+                    readOnly
+                    className="w-full p-2 border rounded-md bg-gray-50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Down Payment (20%)</label>
+                  <input 
+                    type="text" 
+                    value={`$${(parseInt(property.price.replace(/[^0-9]/g, '')) * 0.2).toLocaleString()}`}
+                    readOnly
+                    className="w-full p-2 border rounded-md bg-gray-50"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Loan Term</label>
+                  <select className="w-full p-2 border rounded-md">
+                    <option>30 years</option>
+                    <option>15 years</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Interest Rate</label>
+                  <select className="w-full p-2 border rounded-md">
+                    <option>5.5%</option>
+                    <option>6.0%</option>
+                    <option>6.5%</option>
+                  </select>
+                </div>
+                <Button className="w-full bg-realestate-blue hover:bg-realestate-blue/90">
+                  Calculate
+                </Button>
+                <div className="mt-4 p-4 bg-realestate-lightblue rounded-md text-center">
+                  <p className="text-sm text-gray-600">Estimated monthly payment</p>
+                  <p className="text-xl font-bold text-realestate-navy">$5,675</p>
+                  <p className="text-xs text-gray-500">Principal and interest only</p>
+                </div>
               </div>
             </div>
           </div>
