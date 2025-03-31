@@ -27,8 +27,8 @@ const Hero = () => {
     });
     
     // In a real application, you would redirect to search results page with query params
-    // For this demo, we'll redirect to the properties page
-    window.location.href = `/properties?location=${encodeURIComponent(location)}${propertyType ? `&type=${encodeURIComponent(propertyType)}` : ''}`;
+    // For this demo, we'll just show a toast notification
+    console.log("Searching for:", { location, propertyType });
   };
 
   return (
@@ -42,19 +42,12 @@ const Hero = () => {
         }}
       />
       
-      {/* Overlay - Updated with Hapjay colors */}
-      <div className="absolute inset-0 bg-gradient-to-r from-realestate-navy/90 to-realestate-blue/60" />
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#4175FC]/90 to-[#4175FC]/40" />
       
       {/* Content */}
       <div className="container-custom relative z-10 flex h-full flex-col items-start justify-center">
         <div className="max-w-2xl animate-fade-in">
-          <div className="mb-6">
-            <img 
-              src="/lovable-uploads/5ef637cc-6eee-4bc5-937b-4a0087f633db.png" 
-              alt="Hapjay Real Estate" 
-              className="h-16 md:h-20"
-            />
-          </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
             Find Your Dream Property
           </h1>
@@ -70,11 +63,11 @@ const Hero = () => {
                 placeholder="Location" 
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-realestate-navy"
+                className="flex-1 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#4175FC]"
                 required
               />
               <select 
-                className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-realestate-navy"
+                className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#4175FC]"
                 value={propertyType}
                 onChange={(e) => setPropertyType(e.target.value)}
               >
@@ -84,14 +77,14 @@ const Hero = () => {
                 <option value="condo">Condo</option>
                 <option value="commercial">Commercial</option>
               </select>
-              <Button type="submit" className="bg-realestate-navy hover:bg-realestate-navy/90 text-white">
+              <Button type="submit" className="bg-[#4175FC] hover:bg-[#4175FC]/90">
                 Search
               </Button>
             </div>
           </form>
           
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button asChild size="lg" className="bg-realestate-blue hover:bg-realestate-blue/90 text-white font-medium">
+            <Button asChild size="lg" className="bg-realestate-gold hover:bg-realestate-gold/90 text-realestate-navy font-medium">
               <Link to="/properties">Explore Properties</Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white/10">
