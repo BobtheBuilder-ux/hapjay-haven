@@ -1,27 +1,49 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Home, User, DollarSign, Building, Calendar, Plus, List } from "lucide-react";
+import { 
+  Home, 
+  User, 
+  DollarSign, 
+  Building, 
+  Calendar, 
+  Plus, 
+  List,
+  X
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Property } from "@/types/property";
+import PropertyForm from "./admin/PropertyForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
+  const [showPropertyForm, setShowPropertyForm] = useState(false);
+  const [editingProperty, setEditingProperty] = useState<Property | undefined>(undefined);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [formOpen, setFormOpen] = useState(false);
 
   // Sample stats data for the dashboard
   const stats = [
     {
       title: "Total Properties",
-      value: 47,
+      value: properties.length,
       change: "+5%",
       icon: Building,
       color: "text-purple-500"
     },
     {
       title: "Active Listings",
-      value: 28,
+      value: properties.filter(p => p.status === "For Sale" || p.status === "For Rent").length,
       change: "+2%",
       icon: Home,
       color: "text-blue-500"
@@ -42,49 +64,18 @@ const AdminDashboard = () => {
     }
   ];
 
-  // Sample properties for the property management tab
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      title: "Modern Luxury Villa",
-      location: "Beverly Hills, CA",
-      price: "$1,250,000",
-      status: "Active",
-      type: "Luxury"
-    },
-    {
-      id: 2,
-      title: "Downtown Penthouse",
-      location: "Los Angeles, CA",
-      price: "$850,000",
-      status: "Active",
-      type: "Residential"
-    },
-    {
-      id: 3,
-      title: "Waterfront Estate",
-      location: "Malibu, CA",
-      price: "$2,350,000",
-      status: "Active",
-      type: "Luxury"
-    },
-    {
-      id: 4,
-      title: "Contemporary Townhouse",
-      location: "Venice, CA",
-      price: "$720,000",
-      status: "Pending",
-      type: "Residential"
-    },
-    {
-      id: 5,
-      title: "Urban Loft Apartment",
-      location: "Downtown LA, CA",
-      price: "$3,500/mo",
-      status: "Leased",
-      type: "Rental"
+  // Load properties from localStorage
+  useEffect(() => {
+    const storedProperties = localStorage.getItem('properties');
+    if (storedProperties) {
+      try {
+        const parsedProperties = JSON.parse(storedProperties);
+        setProperties(parsedProperties);
+      } catch (error) {
+        console.error('Error parsing properties:', error);
+      }
     }
-  ]);
+  }, []);
 
   // Sample recent inquiries for the inquiries tab
   const [inquiries, setInquiries] = useState([
@@ -156,36 +147,65 @@ const AdminDashboard = () => {
 
   // Functions to handle button actions
   const handleAddProperty = () => {
-    const newId = properties.length > 0 ? Math.max(...properties.map(p => p.id)) + 1 : 1;
-    const newProperty = {
-      id: newId,
-      title: `New Property ${newId}`,
-      location: "Los Angeles, CA",
-      price: "$0",
-      status: "Draft",
-      type: "Residential"
-    };
+    setEditingProperty(undefined);
+    setFormOpen(true);
+  };
+
+  const handleSaveProperty = (property: Property) => {
+    let updatedProperties;
     
-    setProperties([...properties, newProperty]);
-    toast({
-      title: "Property Added",
-      description: `New property '${newProperty.title}' has been added.`,
-    });
+    if (editingProperty) {
+      // Updating existing property
+      updatedProperties = properties.map(p => 
+        p.id === property.id ? property : p
+      );
+      
+      toast({
+        title: "Property Updated",
+        description: `The property '${property.title}' has been updated.`,
+      });
+    } else {
+      // Adding new property
+      // Ensure unique ID
+      const maxId = properties.length > 0 ? Math.max(...properties.map(p => p.id)) : 0;
+      property.id = maxId + 1;
+      
+      updatedProperties = [...properties, property];
+      
+      toast({
+        title: "Property Added",
+        description: `New property '${property.title}' has been added.`,
+      });
+    }
     
-    // Switch to properties tab to show the new property
+    setProperties(updatedProperties);
+    // Save to localStorage
+    localStorage.setItem('properties', JSON.stringify(updatedProperties));
+    
+    // Close form
+    setFormOpen(false);
+    // Switch to properties tab to show the new/updated property
     setActiveTab("properties");
   };
 
+  const handleCancelPropertyForm = () => {
+    setFormOpen(false);
+  };
+
   const handleEditProperty = (id: number) => {
-    toast({
-      title: "Edit Property",
-      description: `You are now editing property #${id}.`,
-    });
-    // In a real app, this would open a property editing form/modal
+    const property = properties.find(p => p.id === id);
+    if (property) {
+      setEditingProperty(property);
+      setFormOpen(true);
+    }
   };
 
   const handleDeleteProperty = (id: number) => {
-    setProperties(properties.filter(property => property.id !== id));
+    const updatedProperties = properties.filter(property => property.id !== id);
+    setProperties(updatedProperties);
+    // Save to localStorage
+    localStorage.setItem('properties', JSON.stringify(updatedProperties));
+    
     toast({
       title: "Property Deleted",
       description: "The property has been removed from the system.",
@@ -275,7 +295,7 @@ const AdminDashboard = () => {
                         <div className="text-right">
                           <p className="font-medium">{property.price}</p>
                           <span className={`text-xs px-2 py-1 rounded-full ${
-                            property.status === "Active" 
+                            property.status === "For Sale" || property.status === "For Rent"
                               ? "bg-green-100 text-green-800" 
                               : property.status === "Pending" 
                               ? "bg-yellow-100 text-yellow-800" 
@@ -389,7 +409,7 @@ const AdminDashboard = () => {
                           <td className="py-3 px-4">{property.type}</td>
                           <td className="py-3 px-4">
                             <span className={`text-xs px-2 py-1 rounded-full ${
-                              property.status === "Active" 
+                              property.status === "For Sale" || property.status === "For Rent"
                                 ? "bg-green-100 text-green-800" 
                                 : property.status === "Pending" 
                                 ? "bg-yellow-100 text-yellow-800" 
@@ -540,6 +560,22 @@ const AdminDashboard = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Property Form Dialog */}
+      <Dialog open={formOpen} onOpenChange={setFormOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingProperty ? "Edit Property" : "Add New Property"}
+            </DialogTitle>
+          </DialogHeader>
+          <PropertyForm 
+            onSubmit={handleSaveProperty} 
+            onCancel={handleCancelPropertyForm}
+            initialData={editingProperty}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,19 +12,23 @@ import {
 } from "@/components/ui/select";
 import { MapPin, Bed, Bath, Square } from "lucide-react";
 import PropertySearch from "./PropertySearch";
+import { Property } from "@/types/property";
 
-// Sample property data
-const properties = [
+// Sample property data for initial load
+const initialProperties: Property[] = [
   {
     id: 1,
     title: "Modern Luxury Villa",
     description: "Stunning modern villa with panoramic views and premium finishes",
     price: "$1,250,000",
     image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
     location: "Beverly Hills, CA",
     beds: 5,
     baths: 4,
     sqft: 4200,
+    lotSize: "0.5 acres",
+    yearBuilt: 2020,
     type: "Luxury",
     status: "For Sale",
     featured: true
@@ -35,10 +39,13 @@ const properties = [
     description: "Elegant penthouse apartment with city skyline views",
     price: "$850,000",
     image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    images: ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
     location: "Los Angeles, CA",
     beds: 3,
     baths: 2,
     sqft: 1800,
+    lotSize: "N/A",
+    yearBuilt: 2018,
     type: "Residential",
     status: "For Sale",
     featured: true
@@ -49,10 +56,13 @@ const properties = [
     description: "Breathtaking waterfront property with private dock",
     price: "$2,350,000",
     image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
     location: "Malibu, CA",
     beds: 6,
     baths: 5,
     sqft: 5500,
+    lotSize: "1.2 acres",
+    yearBuilt: 2015,
     type: "Luxury",
     status: "For Sale",
     featured: true
@@ -63,10 +73,13 @@ const properties = [
     description: "Modern townhouse with rooftop terrace in prime location",
     price: "$720,000",
     image: "https://images.unsplash.com/photo-1600566753051-f0b4f1d62bd3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    images: ["https://images.unsplash.com/photo-1600566753051-f0b4f1d62bd3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
     location: "Venice, CA",
     beds: 3,
     baths: 2.5,
     sqft: 1950,
+    lotSize: "0.1 acres",
+    yearBuilt: 2019,
     type: "Residential",
     status: "For Sale",
     featured: false
@@ -77,10 +90,13 @@ const properties = [
     description: "Industrial-style loft with high ceilings and exposed brick",
     price: "$3,500/mo",
     image: "https://images.unsplash.com/photo-1559599189-fe84dea4eb79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    images: ["https://images.unsplash.com/photo-1559599189-fe84dea4eb79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
     location: "Downtown LA, CA",
     beds: 2,
     baths: 2,
     sqft: 1200,
+    lotSize: "N/A",
+    yearBuilt: 2017,
     type: "Rental",
     status: "For Rent",
     featured: false
@@ -91,22 +107,25 @@ const properties = [
     description: "Secluded cabin with stunning mountain views and modern amenities",
     price: "$950,000",
     image: "https://images.unsplash.com/photo-1542718610-a1d656d1884c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
+    images: ["https://images.unsplash.com/photo-1542718610-a1d656d1884c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
     location: "Big Bear, CA",
     beds: 4,
     baths: 3,
     sqft: 2800,
+    lotSize: "0.8 acres",
+    yearBuilt: 2016,
     type: "Residential",
     status: "For Sale",
     featured: false
   }
 ];
 
-const PropertyCard = ({ property }: { property: typeof properties[0] }) => {
+const PropertyCard = ({ property }: { property: Property }) => {
   return (
     <Card className="property-card group h-full">
       <div className="property-card-image">
         <img
-          src={property.image}
+          src={property.image || (property.images && property.images[0])}
           alt={property.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
@@ -148,6 +167,22 @@ const PropertyCard = ({ property }: { property: typeof properties[0] }) => {
 const PropertyListing = () => {
   const [sortBy, setSortBy] = useState("featured");
   const [viewType, setViewType] = useState("grid");
+  const [properties, setProperties] = useState<Property[]>(initialProperties);
+  
+  useEffect(() => {
+    // Load properties from localStorage if available
+    const storedProperties = localStorage.getItem('properties');
+    if (storedProperties) {
+      try {
+        const parsedProperties = JSON.parse(storedProperties);
+        if (parsedProperties.length > 0) {
+          setProperties(parsedProperties);
+        }
+      } catch (error) {
+        console.error('Error parsing properties:', error);
+      }
+    }
+  }, []);
   
   // Sort properties based on selected option
   const sortedProperties = [...properties].sort((a, b) => {
