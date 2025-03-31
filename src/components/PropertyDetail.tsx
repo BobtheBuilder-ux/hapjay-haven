@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -22,14 +23,13 @@ import {
   Share, 
   Heart,
   HeartOff,
-  Printer,
-  Loader2
+  Printer
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ContactSection from "./ContactSection";
-import { fetchPropertyById, Property } from "@/services/api";
 
-const fallbackProperties = [
+// Sample property data - in a real app this would come from an API
+const properties = [
   {
     id: 1,
     title: "Modern Luxury Villa",
@@ -152,76 +152,24 @@ const PropertyDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const propertyId = parseInt(id || "1");
-  const [property, setProperty] = useState<Property | null>(null);
-  const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
+  const property = properties.find(p => p.id === propertyId) || properties[0];
   const [activeImage, setActiveImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Reset active image when property changes
     setActiveImage(0);
-    setIsLoading(true);
-    setError(null);
-    
-    const loadPropertyData = async () => {
-      try {
-        const propertyData = await fetchPropertyById(propertyId);
-        
-        if (propertyData) {
-          setProperty(propertyData);
-          setSimilarProperties(
-            fallbackProperties.filter(p => p.id !== propertyId).slice(0, 2)
-          );
-        } else {
-          const fallbackProperty = fallbackProperties.find(p => p.id === propertyId);
-          if (fallbackProperty) {
-            setProperty(fallbackProperty);
-            setSimilarProperties(
-              fallbackProperties.filter(p => p.id !== propertyId).slice(0, 2)
-            );
-          } else {
-            setError("Property not found");
-          }
-        }
-      } catch (err) {
-        console.error("Error loading property:", err);
-        setError("Failed to load property data");
-        
-        const fallbackProperty = fallbackProperties.find(p => p.id === propertyId);
-        if (fallbackProperty) {
-          setProperty(fallbackProperty);
-          setSimilarProperties(
-            fallbackProperties.filter(p => p.id !== propertyId).slice(0, 2)
-          );
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
+    // Scroll to top when component mounts
     window.scrollTo(0, 0);
-    
-    loadPropertyData();
   }, [propertyId]);
 
-  if (isLoading) {
-    return (
-      <div className="py-12 bg-realestate-silver min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center">
-          <Loader2 className="h-12 w-12 animate-spin text-[#4175FC] mb-4" />
-          <p className="text-xl font-medium">Loading property details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !property) {
+  // If property not found
+  if (!property) {
     return (
       <div className="container-custom py-12 text-center">
         <h2 className="text-2xl font-bold mb-4">Property Not Found</h2>
         <p className="mb-6">The property you're looking for doesn't exist or has been removed.</p>
-        <Button asChild className="bg-[#4175FC] hover:bg-[#4175FC]/90">
+        <Button asChild className="bg-realestate-navy hover:bg-realestate-navy/90">
           <a href="/properties">Back to Properties</a>
         </Button>
       </div>
@@ -237,6 +185,7 @@ const PropertyDetail = () => {
   };
 
   const handleShare = () => {
+    // In a real app, this would open a share dialog
     navigator.clipboard.writeText(window.location.href);
     toast({
       title: "Link copied to clipboard",
@@ -256,6 +205,7 @@ const PropertyDetail = () => {
   };
 
   const handleScheduleViewing = () => {
+    // In a real app, this would open a scheduling form or redirect to a scheduling page
     toast({
       title: "Viewing request sent",
       description: "We'll contact you soon to confirm your viewing time.",
@@ -265,6 +215,7 @@ const PropertyDetail = () => {
   return (
     <div className="py-12 bg-realestate-silver">
       <div className="container-custom">
+        {/* Property Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
             <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-0">{property.title}</h1>
@@ -275,10 +226,11 @@ const PropertyDetail = () => {
           </div>
           
           <div className="flex items-center text-gray-600 mb-4">
-            <MapPin className="h-5 w-5 mr-1 text-[#4175FC]" />
+            <MapPin className="h-5 w-5 mr-1 text-realestate-blue" />
             <span>{property.address}</span>
           </div>
 
+          {/* Action buttons */}
           <div className="flex flex-wrap gap-2 mb-4">
             <Button 
               variant="outline" 
@@ -310,6 +262,7 @@ const PropertyDetail = () => {
           </div>
         </div>
         
+        {/* Property Images */}
         <div className="mb-8">
           <Carousel className="w-full">
             <CarouselContent>
@@ -329,6 +282,7 @@ const PropertyDetail = () => {
             <CarouselNext className="border-realestate-navy text-realestate-navy hover:bg-realestate-navy/10" />
           </Carousel>
           
+          {/* Thumbnail Gallery */}
           <div className="grid grid-cols-4 gap-2 mt-2">
             {property.images.map((image, index) => (
               <div
@@ -348,6 +302,7 @@ const PropertyDetail = () => {
           </div>
         </div>
         
+        {/* Property Details */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <Tabs defaultValue="overview">
@@ -399,10 +354,11 @@ const PropertyDetail = () => {
                   </div>
                 </div>
 
+                {/* Similar properties suggestion */}
                 <div className="mt-8 pt-6 border-t">
                   <h3 className="text-xl font-semibold mb-4">Similar Properties You Might Like</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {similarProperties.map(similarProperty => (
+                    {properties.filter(p => p.id !== property.id).slice(0, 2).map(similarProperty => (
                       <div 
                         key={similarProperty.id} 
                         className="flex gap-3 p-3 rounded-lg bg-realestate-lightblue cursor-pointer hover:shadow-md transition-shadow"
@@ -437,7 +393,7 @@ const PropertyDetail = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
                   {property.features.map((feature, index) => (
                     <div key={index} className="flex items-center">
-                      <div className="h-2 w-2 rounded-full bg-[#4175FC] mr-2"></div>
+                      <div className="h-2 w-2 rounded-full bg-realestate-blue mr-2"></div>
                       <span>{feature}</span>
                     </div>
                   ))}
@@ -488,6 +444,7 @@ const PropertyDetail = () => {
             </Tabs>
           </div>
           
+          {/* Agent Information */}
           <div>
             <div className="bg-white p-6 rounded-lg shadow-md mb-6">
               <h3 className="text-xl font-semibold mb-4">Property Agent</h3>
@@ -514,7 +471,7 @@ const PropertyDetail = () => {
               </div>
               <div className="mt-6 space-y-3">
                 <Button 
-                  className="w-full bg-[#4175FC] hover:bg-[#4175FC]/90"
+                  className="w-full bg-realestate-navy hover:bg-realestate-navy/90"
                   onClick={handleScheduleViewing}
                 >
                   Schedule Viewing
@@ -529,6 +486,7 @@ const PropertyDetail = () => {
               </div>
             </div>
             
+            {/* Mortgage Calculator Placeholder */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-xl font-semibold mb-4">Mortgage Calculator</h3>
               <div className="space-y-4">
@@ -565,7 +523,7 @@ const PropertyDetail = () => {
                     <option>6.5%</option>
                   </select>
                 </div>
-                <Button className="w-full bg-[#4175FC] hover:bg-[#4175FC]/90">
+                <Button className="w-full bg-realestate-blue hover:bg-realestate-blue/90">
                   Calculate
                 </Button>
                 <div className="mt-4 p-4 bg-realestate-lightblue rounded-md text-center">
