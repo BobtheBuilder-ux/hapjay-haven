@@ -1,14 +1,26 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Home, User, DollarSign, Building, Calendar, Plus, List } from "lucide-react";
+import { Home, User, DollarSign, Building, Calendar, Plus, List, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import AdminPropertyForm from "./AdminPropertyForm";
+import { 
+  fetchProperties, 
+  createProperty, 
+  updateProperty, 
+  deleteProperty,
+  Property 
+} from "@/services/api";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview");
+  const [showPropertyForm, setShowPropertyForm] = useState(false);
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Sample stats data for the dashboard
   const stats = [
@@ -41,50 +53,6 @@ const AdminDashboard = () => {
       color: "text-yellow-500"
     }
   ];
-
-  // Sample properties for the property management tab
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      title: "Modern Luxury Villa",
-      location: "Beverly Hills, CA",
-      price: "$1,250,000",
-      status: "Active",
-      type: "Luxury"
-    },
-    {
-      id: 2,
-      title: "Downtown Penthouse",
-      location: "Los Angeles, CA",
-      price: "$850,000",
-      status: "Active",
-      type: "Residential"
-    },
-    {
-      id: 3,
-      title: "Waterfront Estate",
-      location: "Malibu, CA",
-      price: "$2,350,000",
-      status: "Active",
-      type: "Luxury"
-    },
-    {
-      id: 4,
-      title: "Contemporary Townhouse",
-      location: "Venice, CA",
-      price: "$720,000",
-      status: "Pending",
-      type: "Residential"
-    },
-    {
-      id: 5,
-      title: "Urban Loft Apartment",
-      location: "Downtown LA, CA",
-      price: "$3,500/mo",
-      status: "Leased",
-      type: "Rental"
-    }
-  ]);
 
   // Sample recent inquiries for the inquiries tab
   const [inquiries, setInquiries] = useState([
@@ -154,42 +122,130 @@ const AdminDashboard = () => {
     }
   ];
 
+  // Load property data
+  useEffect(() => {
+    const loadProperties = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchProperties();
+        if (data && data.length > 0) {
+          setProperties(data);
+        } else {
+          // If no data from API, keep existing sample data
+          // This is just for demo purposes - in a real app you'd handle empty data differently
+        }
+      } catch (error) {
+        console.error("Error loading properties:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load property data. Using sample data instead.",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadProperties();
+  }, [refreshTrigger, toast]);
+
   // Functions to handle button actions
   const handleAddProperty = () => {
-    const newId = properties.length > 0 ? Math.max(...properties.map(p => p.id)) + 1 : 1;
-    const newProperty = {
-      id: newId,
-      title: `New Property ${newId}`,
-      location: "Los Angeles, CA",
-      price: "$0",
-      status: "Draft",
-      type: "Residential"
-    };
-    
-    setProperties([...properties, newProperty]);
-    toast({
-      title: "Property Added",
-      description: `New property '${newProperty.title}' has been added.`,
-    });
-    
-    // Switch to properties tab to show the new property
+    setEditingProperty(null);
+    setShowPropertyForm(true);
     setActiveTab("properties");
   };
 
-  const handleEditProperty = (id: number) => {
-    toast({
-      title: "Edit Property",
-      description: `You are now editing property #${id}.`,
-    });
-    // In a real app, this would open a property editing form/modal
+  const handleEditProperty = (property: Property) => {
+    setEditingProperty(property);
+    setShowPropertyForm(true);
+    setActiveTab("properties");
   };
 
-  const handleDeleteProperty = (id: number) => {
-    setProperties(properties.filter(property => property.id !== id));
-    toast({
-      title: "Property Deleted",
-      description: "The property has been removed from the system.",
-    });
+  const handleDeleteProperty = async (id: number) => {
+    // Confirm before deletion
+    if (!confirm("Are you sure you want to delete this property?")) {
+      return;
+    }
+
+    try {
+      const success = await deleteProperty(id);
+      
+      if (success) {
+        // Update local state
+        setProperties(properties.filter(property => property.id !== id));
+        
+        toast({
+          title: "Property Deleted",
+          description: "The property has been removed from the system.",
+        });
+      } else {
+        throw new Error("Failed to delete property");
+      }
+    } catch (error) {
+      console.error("Error deleting property:", error);
+      toast({
+        title: "Delete Failed",
+        description: "There was an error deleting the property. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePropertyFormSubmit = async (propertyData: any) => {
+    try {
+      if (editingProperty) {
+        // Update existing property
+        const updatedProperty = await updateProperty(editingProperty.id, propertyData);
+        
+        if (updatedProperty) {
+          // Update local state
+          setProperties(properties.map(p => 
+            p.id === editingProperty.id ? updatedProperty : p
+          ));
+          
+          toast({
+            title: "Property Updated",
+            description: `${updatedProperty.title} has been updated successfully.`,
+          });
+        } else {
+          throw new Error("Failed to update property");
+        }
+      } else {
+        // Create new property
+        const newProperty = await createProperty(propertyData);
+        
+        if (newProperty) {
+          // Add to local state
+          setProperties([...properties, newProperty]);
+          
+          toast({
+            title: "Property Added",
+            description: `${newProperty.title} has been added successfully.`,
+          });
+        } else {
+          throw new Error("Failed to create property");
+        }
+      }
+      
+      // Reset form state
+      setShowPropertyForm(false);
+      setEditingProperty(null);
+      
+      // Trigger a refresh of property data
+      setRefreshTrigger(prev => prev + 1);
+    } catch (error) {
+      console.error("Error saving property:", error);
+      toast({
+        title: "Save Failed",
+        description: "There was an error saving the property. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCancelPropertyForm = () => {
+    setShowPropertyForm(false);
+    setEditingProperty(null);
   };
 
   const handleReplyInquiry = (id: number) => {
@@ -258,35 +314,46 @@ const AdminDashboard = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle>Recent Properties</CardTitle>
-                    <Button size="sm" variant="outline" className="h-8" onClick={handleAddProperty}>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="h-8" 
+                      onClick={handleAddProperty}
+                    >
                       <Plus className="h-4 w-4 mr-1" />
                       Add Property
                     </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {properties.slice(0, 4).map((property) => (
-                      <div key={property.id} className="flex items-center justify-between border-b pb-4">
-                        <div>
-                          <h4 className="font-semibold">{property.title}</h4>
-                          <p className="text-sm text-gray-500">{property.location}</p>
+                  {isLoading ? (
+                    <div className="flex justify-center py-8">
+                      <Loader2 className="h-8 w-8 animate-spin text-[#4175FC]" />
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {properties.slice(0, 4).map((property) => (
+                        <div key={property.id} className="flex items-center justify-between border-b pb-4">
+                          <div>
+                            <h4 className="font-semibold">{property.title}</h4>
+                            <p className="text-sm text-gray-500">{property.location}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-medium">{property.price}</p>
+                            <span className={`text-xs px-2 py-1 rounded-full ${
+                              property.status === "For Sale" || property.status === "Active"
+                                ? "bg-green-100 text-green-800" 
+                                : property.status === "Pending" 
+                                ? "bg-yellow-100 text-yellow-800" 
+                                : "bg-blue-100 text-blue-800"
+                            }`}>
+                              {property.status}
+                            </span>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-medium">{property.price}</p>
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            property.status === "Active" 
-                              ? "bg-green-100 text-green-800" 
-                              : property.status === "Pending" 
-                              ? "bg-yellow-100 text-yellow-800" 
-                              : "bg-blue-100 text-blue-800"
-                          }`}>
-                            {property.status}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
               
@@ -355,76 +422,95 @@ const AdminDashboard = () => {
           
           {/* Properties Tab */}
           <TabsContent value="properties">
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle>Property Management</CardTitle>
-                  <Button size="sm" className="bg-[#4175FC]" onClick={handleAddProperty}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add New Property
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4">ID</th>
-                        <th className="text-left py-3 px-4">Property</th>
-                        <th className="text-left py-3 px-4">Location</th>
-                        <th className="text-left py-3 px-4">Price</th>
-                        <th className="text-left py-3 px-4">Type</th>
-                        <th className="text-left py-3 px-4">Status</th>
-                        <th className="text-right py-3 px-4">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {properties.map((property) => (
-                        <tr key={property.id} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4">{property.id}</td>
-                          <td className="py-3 px-4 font-medium">{property.title}</td>
-                          <td className="py-3 px-4">{property.location}</td>
-                          <td className="py-3 px-4">{property.price}</td>
-                          <td className="py-3 px-4">{property.type}</td>
-                          <td className="py-3 px-4">
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                              property.status === "Active" 
-                                ? "bg-green-100 text-green-800" 
-                                : property.status === "Pending" 
-                                ? "bg-yellow-100 text-yellow-800" 
-                                : property.status === "Draft"
-                                ? "bg-gray-100 text-gray-800"
-                                : "bg-blue-100 text-blue-800"
-                            }`}>
-                              {property.status}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-right">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 px-2"
-                              onClick={() => handleEditProperty(property.id)}
-                            >
-                              Edit
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 px-2 text-red-500"
-                              onClick={() => handleDeleteProperty(property.id)}
-                            >
-                              Delete
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
+            {showPropertyForm ? (
+              <AdminPropertyForm 
+                initialData={editingProperty || undefined}
+                onSubmit={handlePropertyFormSubmit}
+                onCancel={handleCancelPropertyForm}
+                isEdit={!!editingProperty}
+              />
+            ) : (
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Property Management</CardTitle>
+                    <Button 
+                      size="sm" 
+                      className="bg-[#4175FC] hover:bg-[#4175FC]/90" 
+                      onClick={handleAddProperty}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add New Property
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="flex justify-center py-12">
+                      <Loader2 className="h-12 w-12 animate-spin text-[#4175FC]" />
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-3 px-4">ID</th>
+                            <th className="text-left py-3 px-4">Property</th>
+                            <th className="text-left py-3 px-4">Location</th>
+                            <th className="text-left py-3 px-4">Price</th>
+                            <th className="text-left py-3 px-4">Type</th>
+                            <th className="text-left py-3 px-4">Status</th>
+                            <th className="text-right py-3 px-4">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {properties.map((property) => (
+                            <tr key={property.id} className="border-b hover:bg-gray-50">
+                              <td className="py-3 px-4">{property.id}</td>
+                              <td className="py-3 px-4 font-medium">{property.title}</td>
+                              <td className="py-3 px-4">{property.location}</td>
+                              <td className="py-3 px-4">{property.price}</td>
+                              <td className="py-3 px-4">{property.type}</td>
+                              <td className="py-3 px-4">
+                                <span className={`text-xs px-2 py-1 rounded-full ${
+                                  property.status === "For Sale" || property.status === "Active"
+                                    ? "bg-green-100 text-green-800" 
+                                    : property.status === "Pending" 
+                                    ? "bg-yellow-100 text-yellow-800" 
+                                    : property.status === "Draft"
+                                    ? "bg-gray-100 text-gray-800"
+                                    : "bg-blue-100 text-blue-800"
+                                }`}>
+                                  {property.status}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-right">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 px-2"
+                                  onClick={() => handleEditProperty(property)}
+                                >
+                                  Edit
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 px-2 text-red-500"
+                                  onClick={() => handleDeleteProperty(property.id)}
+                                >
+                                  Delete
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
           
           {/* Inquiries Tab */}
@@ -505,7 +591,7 @@ const AdminDashboard = () => {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle>Appointment Calendar</CardTitle>
-                  <Button size="sm" className="bg-[#4175FC]" onClick={handleScheduleAppointment}>
+                  <Button size="sm" className="bg-[#4175FC] hover:bg-[#4175FC]/90" onClick={handleScheduleAppointment}>
                     <Plus className="h-4 w-4 mr-1" />
                     Schedule Appointment
                   </Button>

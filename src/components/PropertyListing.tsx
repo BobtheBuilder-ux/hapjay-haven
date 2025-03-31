@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -10,11 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MapPin, Bed, Bath, Square } from "lucide-react";
+import { MapPin, Bed, Bath, Square, Loader2 } from "lucide-react";
 import PropertySearch from "./PropertySearch";
+import { fetchProperties, Property } from "@/services/api";
 
-// Sample property data
-const properties = [
+// Sample property data for fallback
+const fallbackProperties = [
   {
     id: 1,
     title: "Modern Luxury Villa",
@@ -101,12 +101,12 @@ const properties = [
   }
 ];
 
-const PropertyCard = ({ property }: { property: typeof properties[0] }) => {
+const PropertyCard = ({ property }: { property: Property }) => {
   return (
     <Card className="property-card group h-full">
       <div className="property-card-image">
         <img
-          src={property.image}
+          src={property.images[0]}
           alt={property.title}
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
@@ -116,7 +116,7 @@ const PropertyCard = ({ property }: { property: typeof properties[0] }) => {
       </div>
       <CardContent className="p-4 flex flex-col h-[calc(100%-9rem)]">
         <div className="mb-2 flex items-center text-sm text-gray-500">
-          <MapPin className="mr-1 h-4 w-4 text-realestate-navy" />
+          <MapPin className="mr-1 h-4 w-4 text-[#4175FC]" />
           {property.location}
         </div>
         <h3 className="mb-1 text-xl font-semibold">{property.title}</h3>
@@ -148,12 +148,38 @@ const PropertyCard = ({ property }: { property: typeof properties[0] }) => {
 const PropertyListing = () => {
   const [sortBy, setSortBy] = useState("featured");
   const [viewType, setViewType] = useState("grid");
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const loadProperties = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchProperties();
+        if (data && data.length > 0) {
+          setProperties(data);
+        } else {
+          setProperties(fallbackProperties);
+        }
+        setError(null);
+      } catch (err) {
+        console.error("Error fetching properties:", err);
+        setError("Failed to load properties");
+        setProperties(fallbackProperties);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadProperties();
+  }, []);
   
   // Sort properties based on selected option
   const sortedProperties = [...properties].sort((a, b) => {
     switch (sortBy) {
       case "featured":
-        return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
+        return 0;
       case "price-high":
         return parseFloat(b.price.replace(/[^0-9.-]+/g, "")) - parseFloat(a.price.replace(/[^0-9.-]+/g, ""));
       case "price-low":
@@ -164,6 +190,36 @@ const PropertyListing = () => {
         return 0;
     }
   });
+
+  if (isLoading) {
+    return (
+      <div className="py-12 bg-realestate-silver min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-12 w-12 animate-spin text-[#4175FC] mb-4" />
+          <p className="text-xl font-medium">Loading properties...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && properties.length === 0) {
+    return (
+      <div className="py-12 bg-realestate-silver min-h-screen">
+        <div className="container-custom">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <h2 className="text-2xl font-bold mb-4">Unable to Load Properties</h2>
+            <p className="mb-6">{error}</p>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-[#4175FC] text-white rounded-md hover:bg-[#4175FC]/90"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-12 bg-realestate-silver">
