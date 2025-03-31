@@ -63,10 +63,10 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Real estate specific colors
+				// Real estate specific colors updated to match Hapjay logo
 				realestate: {
-					'navy': '#0A2463',
-					'gold': '#E6C200',
+					'navy': '#001A70', // Dark blue from logo
+					'blue': '#14B3D9', // Light blue from logo
 					'silver': '#F0F2F5',
 					'charcoal': '#333F48',
 					'lightblue': '#E5F1FB'
