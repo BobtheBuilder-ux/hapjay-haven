@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { signInWithEmailAndPassword, signInWithGoogle } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
-import { LogIn, User } from "lucide-react";
+import { LogIn } from "lucide-react";
+import { Google } from "lucide-react";
 
 const AdminLogin = () => {
   const { toast } = useToast();
@@ -34,11 +35,13 @@ const AdminLogin = () => {
         variant: "default",
       });
       navigate("/admin/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Login error:", error);
       toast({
         title: "Login Failed",
-        description: "Invalid email or password. Please try again.",
+        description: error.code === "auth/invalid-credential" 
+          ? "Invalid email or password. Please try again." 
+          : "An error occurred during login. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -56,11 +59,20 @@ const AdminLogin = () => {
         variant: "default",
       });
       navigate("/admin/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Google sign-in error:", error);
+      
+      // Provide more helpful error message based on error code
+      let errorMessage = "There was an error signing in with Google.";
+      if (error.code === 'auth/unauthorized-domain') {
+        errorMessage = "This domain is not authorized for Google authentication. Try email login instead.";
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "Sign-in popup was closed before completion.";
+      }
+      
       toast({
-        title: "Login Failed",
-        description: "There was an error signing in with Google.",
+        title: "Google Login Failed",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -163,7 +175,7 @@ const AdminLogin = () => {
                   "Signing in..."
                 ) : (
                   <>
-                    <User className="mr-2 h-4 w-4" /> Sign in with Google
+                    <Google className="mr-2 h-4 w-4" /> Sign in with Google
                   </>
                 )}
               </Button>

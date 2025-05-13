@@ -2,15 +2,15 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
-import { getAnalytics } from "firebase/analytics";
-import { getAuth } from "firebase/auth";
+import { getAnalytics, isSupported } from "firebase/analytics";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAPcSsUQFzOcwle1QyRYI6ZTPTjx9XVI14",
   authDomain: "hapjay-property.firebaseapp.com",
   projectId: "hapjay-property",
-  storageBucket: "hapjay-property.appspot.com",
+  storageBucket: "hapjay-property.firebasestorage.app",
   messagingSenderId: "126642387576",
   appId: "1:126642387576:web:ccf199241cd693b7778b8d",
   measurementId: "G-ZEV1XWQ2PX"
@@ -21,6 +21,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
-const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+
+// Initialize Analytics conditionally
+let analytics = null;
+isSupported().then(yes => yes && (analytics = getAnalytics(app)));
+
+// For development environments, you can uncomment this to use local emulators
+// if (process.env.NODE_ENV === 'development') {
+//   connectAuthEmulator(auth, 'http://localhost:9099');
+// }
 
 export { app, db, storage, auth, analytics };
