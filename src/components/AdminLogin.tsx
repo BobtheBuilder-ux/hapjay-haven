@@ -3,46 +3,69 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { signInWithEmailAndPassword, signInWithGoogle } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
+import { LogIn, User } from "lucide-react";
 
 const AdminLogin = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication (in a real app, this would be an API call)
-    setTimeout(() => {
+    try {
+      await signInWithEmailAndPassword(formData.email, formData.password);
+      toast({
+        title: "Login Successful",
+        description: "Welcome back to the admin dashboard.",
+        variant: "default",
+      });
+      navigate("/admin/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      toast({
+        title: "Login Failed",
+        description: "Invalid email or password. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-      
-      // Demo credentials: admin@hapjay.com / admin123
-      if (formData.email === "admin@hapjay.com" && formData.password === "admin123") {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back to the admin dashboard.",
-          variant: "default",
-        });
-        
-        // In a real app, would redirect to admin dashboard or set auth state
-        window.location.href = "/admin/dashboard";
-      } else {
-        toast({
-          title: "Login Failed",
-          description: "Invalid email or password. Please try again.",
-          variant: "destructive",
-        });
-      }
-    }, 1500);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+      toast({
+        title: "Login Successful",
+        description: "Welcome back to the admin dashboard.",
+        variant: "default",
+      });
+      navigate("/admin/dashboard");
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+      toast({
+        title: "Login Failed",
+        description: "There was an error signing in with Google.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGoogleLoading(false);
+    }
   };
 
   return (
@@ -68,7 +91,7 @@ const AdminLogin = () => {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="admin@hapjay.com"
+                  placeholder="Enter your email"
                   required
                 />
               </div>
@@ -110,17 +133,40 @@ const AdminLogin = () => {
               
               <Button
                 type="submit"
-                className="w-full bg-realestate-navy hover:bg-realestate-navy/90"
+                className="w-full bg-realestate-navy hover:bg-realestate-navy/90 flex items-center justify-center"
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Sign in"}
+                {isLoading ? "Signing in..." : (
+                  <>
+                    <LogIn className="mr-2 h-4 w-4" /> Sign in with Email
+                  </>
+                )}
               </Button>
-              
-              <div className="text-center text-sm text-gray-500 mt-4">
-                <p>Demo credentials:</p>
-                <p>Email: admin@hapjay.com</p>
-                <p>Password: admin123</p>
+
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                </div>
               </div>
+              
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleGoogleSignIn}
+                disabled={isGoogleLoading}
+                className="w-full flex items-center justify-center"
+              >
+                {isGoogleLoading ? (
+                  "Signing in..."
+                ) : (
+                  <>
+                    <User className="mr-2 h-4 w-4" /> Sign in with Google
+                  </>
+                )}
+              </Button>
             </div>
           </form>
         </div>
