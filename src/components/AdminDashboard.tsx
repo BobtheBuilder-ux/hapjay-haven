@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +16,12 @@ import OverviewTab from "./admin/OverviewTab";
 import PropertiesTab from "./admin/PropertiesTab";
 import InquiriesTab from "./admin/InquiriesTab";
 import CalendarTab from "./admin/CalendarTab";
+import { 
+  getProperties, 
+  addProperty as firebaseAddProperty, 
+  updateProperty as firebaseUpdateProperty,
+  deleteProperty as firebaseDeleteProperty 
+} from "@/services/propertyService";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
@@ -24,6 +29,7 @@ const AdminDashboard = () => {
   const [editingProperty, setEditingProperty] = useState<Property | undefined>(undefined);
   const [properties, setProperties] = useState<Property[]>([]);
   const [formOpen, setFormOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Sample inquiries data
   const [inquiries, setInquiries] = useState<Inquiry[]>([
@@ -93,18 +99,27 @@ const AdminDashboard = () => {
     }
   ];
 
-  // Load properties from localStorage
+  // Load properties from Firebase
   useEffect(() => {
-    const storedProperties = localStorage.getItem('properties');
-    if (storedProperties) {
+    const fetchProperties = async () => {
+      setLoading(true);
       try {
-        const parsedProperties = JSON.parse(storedProperties);
-        setProperties(parsedProperties);
+        const fetchedProperties = await getProperties();
+        setProperties(fetchedProperties);
       } catch (error) {
-        console.error('Error parsing properties:', error);
+        console.error('Error fetching properties:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load properties. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
       }
-    }
-  }, []);
+    };
+
+    fetchProperties();
+  }, [toast]);
 
   // Functions to handle button actions
   const handleAddProperty = () => {
@@ -112,41 +127,55 @@ const AdminDashboard = () => {
     setFormOpen(true);
   };
 
-  const handleSaveProperty = (property: Property) => {
-    let updatedProperties;
+  const handleSaveProperty = async (property: Property) => {
+    setLoading(true);
     
-    if (editingProperty) {
-      // Updating existing property
-      updatedProperties = properties.map(p => 
-        p.id === property.id ? property : p
-      );
+    try {
+      if (editingProperty) {
+        // Updating existing property in Firebase
+        await firebaseUpdateProperty(property);
+        
+        // Update local state
+        setProperties(properties.map(p => 
+          p.id === property.id ? property : p
+        ));
+        
+        toast({
+          title: "Property Updated",
+          description: `The property '${property.title}' has been updated.`,
+        });
+      } else {
+        // Adding new property to Firebase
+        // Generate temporary ID
+        const tempId = Date.now();
+        property.id = tempId;
+        
+        // Add to Firebase and get the updated property with Firebase ID
+        const addedProperty = await firebaseAddProperty(property);
+        
+        // Update local state
+        setProperties([...properties, addedProperty]);
+        
+        toast({
+          title: "Property Added",
+          description: `New property '${property.title}' has been added.`,
+        });
+      }
       
+      // Close form
+      setFormOpen(false);
+      // Switch to properties tab to show the new/updated property
+      setActiveTab("properties");
+    } catch (error) {
+      console.error("Error saving property:", error);
       toast({
-        title: "Property Updated",
-        description: `The property '${property.title}' has been updated.`,
+        title: "Error",
+        description: "Failed to save the property. Please try again.",
+        variant: "destructive",
       });
-    } else {
-      // Adding new property
-      // Ensure unique ID
-      const maxId = properties.length > 0 ? Math.max(...properties.map(p => p.id)) : 0;
-      property.id = maxId + 1;
-      
-      updatedProperties = [...properties, property];
-      
-      toast({
-        title: "Property Added",
-        description: `New property '${property.title}' has been added.`,
-      });
+    } finally {
+      setLoading(false);
     }
-    
-    setProperties(updatedProperties);
-    // Save to localStorage
-    localStorage.setItem('properties', JSON.stringify(updatedProperties));
-    
-    // Close form
-    setFormOpen(false);
-    // Switch to properties tab to show the new/updated property
-    setActiveTab("properties");
   };
 
   const handleCancelPropertyForm = () => {
@@ -161,16 +190,30 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleDeleteProperty = (id: number) => {
-    const updatedProperties = properties.filter(property => property.id !== id);
-    setProperties(updatedProperties);
-    // Save to localStorage
-    localStorage.setItem('properties', JSON.stringify(updatedProperties));
-    
-    toast({
-      title: "Property Deleted",
-      description: "The property has been removed from the system.",
-    });
+  const handleDeleteProperty = async (id: number) => {
+    setLoading(true);
+    try {
+      // Delete from Firebase
+      await firebaseDeleteProperty(id);
+      
+      // Update local state
+      const updatedProperties = properties.filter(property => property.id !== id);
+      setProperties(updatedProperties);
+      
+      toast({
+        title: "Property Deleted",
+        description: "The property has been removed from the system.",
+      });
+    } catch (error) {
+      console.error("Error deleting property:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete the property. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleReplyInquiry = (id: number) => {
@@ -234,6 +277,7 @@ const AdminDashboard = () => {
               onAddProperty={handleAddProperty}
               onEditProperty={handleEditProperty}
               onDeleteProperty={handleDeleteProperty}
+              loading={loading}
             />
           </TabsContent>
           
@@ -268,6 +312,7 @@ const AdminDashboard = () => {
             onSubmit={handleSaveProperty} 
             onCancel={handleCancelPropertyForm}
             initialData={editingProperty}
+            isSubmitting={loading}
           />
         </DialogContent>
       </Dialog>

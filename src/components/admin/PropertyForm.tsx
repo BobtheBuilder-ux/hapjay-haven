@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Form,
@@ -23,15 +22,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { Property } from "@/types/property";
 import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 
 interface PropertyFormProps {
   onSubmit: (property: Property) => void;
   onCancel: () => void;
   initialData?: Property;
+  isSubmitting?: boolean;
 }
 
-const PropertyForm = ({ onSubmit, onCancel, initialData }: PropertyFormProps) => {
+const PropertyForm = ({ onSubmit, onCancel, initialData, isSubmitting = false }: PropertyFormProps) => {
   const { toast } = useToast();
   const [images, setImages] = useState<string[]>(initialData?.images || []);
   const [imageUrl, setImageUrl] = useState("");
@@ -390,11 +390,18 @@ const PropertyForm = ({ onSubmit, onCancel, initialData }: PropertyFormProps) =>
         />
 
         <div className="flex justify-end space-x-4">
-          <Button type="button" variant="outline" onClick={onCancel}>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button type="submit">
-            {initialData ? "Update Property" : "Add Property"}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {initialData ? "Updating..." : "Adding..."}
+              </>
+            ) : (
+              initialData ? "Update Property" : "Add Property"
+            )}
           </Button>
         </div>
       </form>
