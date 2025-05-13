@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Instagram, Twitter, Linkedin, Mail, Phone, MapPin } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -15,7 +15,7 @@ const Footer = () => {
               <span className="text-realestate-gold">Hapjay</span> Real Estate
             </h3>
             <p className="text-white/80 max-w-xs">
-              Your trusted partner in finding the perfect property, offering exceptional service and expertise.
+              Where We Build Your Visions. We don't just find properties—we create opportunities for your real estate dreams.
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-white hover:text-realestate-gold transition-colors">
@@ -26,6 +26,9 @@ const Footer = () => {
               </a>
               <a href="#" className="text-white hover:text-realestate-gold transition-colors">
                 <Twitter className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-white hover:text-realestate-gold transition-colors">
+                <Linkedin className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -54,19 +57,19 @@ const Footer = () => {
 
           {/* Properties */}
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Property Types</h4>
+            <h4 className="text-lg font-semibold">Our Services</h4>
             <nav className="flex flex-col space-y-2">
               <Link to="/properties?type=residential" className="text-white/80 hover:text-realestate-gold transition-colors">
-                Residential
+                Meticulous Planning
               </Link>
               <Link to="/properties?type=commercial" className="text-white/80 hover:text-realestate-gold transition-colors">
-                Commercial
+                Completion On Time
               </Link>
               <Link to="/properties?type=luxury" className="text-white/80 hover:text-realestate-gold transition-colors">
-                Luxury Homes
+                Perfect Execution
               </Link>
-              <Link to="/properties?type=rental" className="text-white/80 hover:text-realestate-gold transition-colors">
-                Rentals
+              <Link to="/properties?type=property-management" className="text-white/80 hover:text-realestate-gold transition-colors">
+                Property Management
               </Link>
             </nav>
           </div>
@@ -77,15 +80,15 @@ const Footer = () => {
             <div className="flex flex-col space-y-3">
               <div className="flex items-center space-x-2">
                 <MapPin className="h-5 w-5 text-realestate-gold" />
-                <span className="text-white/80">123 Main Street, City, State</span>
+                <span className="text-white/80">Suite C22, Habiba Plaza, Wuse 2, Abuja</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="h-5 w-5 text-realestate-gold" />
-                <span className="text-white/80">(555) 123-4567</span>
+                <span className="text-white/80">+234 803 8833 068</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="h-5 w-5 text-realestate-gold" />
-                <span className="text-white/80">info@hapjayrealestate.com</span>
+                <span className="text-white/80">info@hapjayrealtysolutions.com</span>
               </div>
             </div>
           </div>

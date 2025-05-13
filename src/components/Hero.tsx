@@ -56,10 +56,10 @@ const Hero = () => {
             />
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
-            Find Your Dream Property
+            Experience Real Estate Done Right
           </h1>
           <p className="text-lg md:text-xl text-white/90 mb-8">
-            Hapjay Real Estate Solutions offers a personalized approach to help you find the perfect property that meets all your needs.
+            Your journey to finding the perfect property starts here. Whether it's a dream home, a prime office space, or an investment opportunity, we're dedicated to turning your vision into reality.
           </p>
           
           {/* Search Bar */}

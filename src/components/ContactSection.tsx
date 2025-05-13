@@ -50,7 +50,7 @@ const ContactSection = () => {
           <div>
             <h2 className="text-3xl md:text-4xl font-bold mb-6">Get In Touch</h2>
             <p className="text-gray-600 mb-8">
-              We're here to help you with all your real estate needs. Contact us today to schedule a consultation or to learn more about our services.
+              Have questions, need assistance, or ready to take the next step? Reach out to Hapjay Realty Solutions today! We're here to help you with all your real estate needs.
             </p>
             
             <div className="space-y-6">
@@ -60,7 +60,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-1">Our Office</h3>
-                  <p className="text-gray-600">123 Main Street, Suite 400<br />Los Angeles, CA 90001</p>
+                  <p className="text-gray-600">Suite C22 Second floor<br />Habiba Plaza, Wuse 2<br />Abuja</p>
                 </div>
               </div>
               
@@ -70,7 +70,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-1">Phone</h3>
-                  <p className="text-gray-600">(555) 123-4567</p>
+                  <p className="text-gray-600">+234 803 8833 068<br />+234 705 3811 200</p>
                 </div>
               </div>
               
@@ -80,7 +80,7 @@ const ContactSection = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold mb-1">Email</h3>
-                  <p className="text-gray-600">info@hapjayrealestate.com</p>
+                  <p className="text-gray-600">info@hapjayrealtysolutions.com</p>
                 </div>
               </div>
               
@@ -91,9 +91,8 @@ const ContactSection = () => {
                 <div>
                   <h3 className="text-lg font-semibold mb-1">Business Hours</h3>
                   <p className="text-gray-600">
-                    Monday - Friday: 9:00 AM - 6:00 PM<br />
-                    Saturday: 10:00 AM - 4:00 PM<br />
-                    Sunday: Closed
+                    Monday - Friday: 10:00 AM - 5:00 PM<br />
+                    Saturday - Sunday: Closed
                   </p>
                 </div>
               </div>
@@ -136,7 +135,7 @@ const ContactSection = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    placeholder="(555) 123-4567"
+                    placeholder="+234 800 000 0000"
                   />
                 </div>
                 

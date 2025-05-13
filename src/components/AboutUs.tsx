@@ -1,5 +1,4 @@
-
-import { Building, Award, Users, Shield } from "lucide-react";
+import { Building, Award, Users, Shield, Clock, CheckCircle, Target } from "lucide-react";
 
 const AboutUs = () => {
   return (
@@ -24,7 +23,7 @@ const AboutUs = () => {
             About Hapjay Real Estate
           </h1>
           <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl">
-            A premier real estate agency dedicated to finding the perfect properties for our clients.
+            A unique Real Estate and Property Consulting Company offering quality services and advisory to clients focused on achieving high returns on their investments.
           </p>
         </div>
       </section>
@@ -34,16 +33,16 @@ const AboutUs = () => {
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Our Story</h2>
+              <h2 className="text-3xl font-bold mb-6">Company Overview</h2>
               <div className="space-y-4">
                 <p className="text-gray-600">
-                  Founded in 2010, Hapjay Real Estate Solutions began with a simple mission: to transform the real estate experience by providing exceptional service, market expertise, and a personalized approach to every client.
+                  We are a unique Real Estate and Property Consulting Company offering quality real estate services and advisory services to clients focused on investing and achieving high returns on their investments. We are also involved in the development of residential, commercial, and recreational projects.
                 </p>
                 <p className="text-gray-600">
-                  Our founder, Michael Hapjay, recognized that many people were struggling to navigate the complex real estate market. With over 20 years of experience in the industry, he assembled a team of dedicated professionals who shared his vision and values.
+                  At Hapjay Realty Solutions, we don't just find properties—we create opportunities. Step into a world where your real estate dreams come to life, guided by experts who truly care. Let's make your property journey seamless and exciting!
                 </p>
                 <p className="text-gray-600">
-                  Today, Hapjay Real Estate Solutions has grown into a trusted name in the industry, known for our integrity, innovation, and unwavering commitment to client satisfaction. We've helped thousands of clients find their dream homes, make smart investments, and achieve their real estate goals.
+                  We believe every property has a story—and yours is waiting to be written. Explore our exclusive listings and experience a new standard in real estate. Let's build your future together!
                 </p>
               </div>
             </div>
@@ -54,8 +53,8 @@ const AboutUs = () => {
                 className="rounded-lg shadow-lg"
               />
               <div className="absolute -bottom-6 -right-6 bg-realestate-navy text-white p-4 rounded-lg shadow-lg md:max-w-[200px]">
-                <p className="font-semibold">13+ Years</p>
-                <p className="text-sm">of excellence in real estate</p>
+                <p className="font-semibold">Where We Build</p>
+                <p className="text-sm">Your Visions</p>
               </div>
             </div>
           </div>
@@ -66,50 +65,71 @@ const AboutUs = () => {
       <section className="py-16 bg-realestate-silver">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Our Values</h2>
+            <h2 className="text-3xl font-bold mb-4">Our Mission & Vision</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              At Hapjay Real Estate, our core values guide everything we do. They define who we are and how we serve our clients.
+              We are guided by clear principles that shape everything we do at Hapjay Real Estate.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-realestate-navy text-white">
-                <Users className="h-8 w-8" />
+                <Target className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Client-First Approach</h3>
+              <h3 className="text-xl font-semibold mb-3 text-center">Our Mission</h3>
               <p className="text-gray-600">
-                We prioritize our clients' needs and goals, providing personalized service that exceeds expectations.
+                Our Mission is to maximize our clients' real estate investment values and minimize risk by providing verified properties at convenient costs and superior advisory services. We will always pursue our business with a steadfast focus on high ethical standards and build continued relationships with our clients based on respect, confidentiality, and property security.
               </p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-realestate-navy text-white">
-                <Shield className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-semibold mb-3">Integrity & Trust</h3>
-              <p className="text-gray-600">
-                We maintain the highest ethical standards, operating with transparency and honesty in every transaction.
-              </p>
-            </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-realestate-navy text-white">
                 <Award className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Excellence</h3>
+              <h3 className="text-xl font-semibold mb-3 text-center">Our Vision</h3>
               <p className="text-gray-600">
-                We strive for excellence in all aspects of our service, from market knowledge to communication.
+                Our Vision is to be the key trusted Real Estate Service Provider with solutions to housing problems for all income categories and to build a conducive living environment centered on aesthetic excellence with sustainable development principles.
               </p>
             </div>
-            
-            <div className="bg-white p-6 rounded-lg shadow-md text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-realestate-navy text-white">
-                <Building className="h-8 w-8" />
+          </div>
+        </div>
+      </section>
+      
+      {/* CEO's Message */}
+      <section className="py-16 bg-white">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">CEO's Message</h2>
+          </div>
+          
+          <div className="max-w-3xl mx-auto bg-realestate-silver p-8 rounded-lg relative">
+            <div className="absolute -top-10 left-1/2 transform -translate-x-1/2">
+              <div className="h-20 w-20 rounded-full bg-white p-1">
+                <img
+                  src="https://randomuser.me/api/portraits/women/44.jpg"
+                  alt="Happy Leonard - CEO"
+                  className="h-full w-full object-cover rounded-full"
+                />
               </div>
-              <h3 className="text-xl font-semibold mb-3">Community Impact</h3>
-              <p className="text-gray-600">
-                We're committed to making a positive impact in the communities where we live and work.
+            </div>
+            
+            <div className="pt-12">
+              <p className="italic text-gray-600 mb-6">
+                "Dear Valued Clients,
+              </p>
+              <p className="text-gray-600 mb-4">
+                It is with great pleasure and a deep sense of purpose that I welcome you to Hapjay Realty Solutions. As the CEO, I, Happy Leonard, am truly honored to lead a team that is committed to redefining real estate excellence in Abuja and beyond.
+              </p>
+              <p className="text-gray-600 mb-4">
+                Real estate is more than just buying and selling—it's about creating value and forging relationships built on trust, transparency, and reliability. Our team of dedicated professionals brings unparalleled expertise and a client-first approach to every interaction.
+              </p>
+              <p className="text-gray-600 mb-6">
+                Thank you for choosing Hapjay Realty Solutions as your trusted partner. Your dreams are our inspiration, and we are here to help you bring them to life.
+              </p>
+              <p className="font-semibold text-right">
+                Warm regards,<br />
+                Happy Leonard<br />
+                CEO, Hapjay Realty Solutions
               </p>
             </div>
           </div>
@@ -136,10 +156,10 @@ const AboutUs = () => {
                   className="w-full aspect-square object-cover"
                 />
               </div>
-              <h3 className="text-xl font-semibold mb-1">Michael Hapjay</h3>
+              <h3 className="text-xl font-semibold mb-1">Happy Leonard</h3>
               <p className="text-realestate-navy font-medium mb-3">Founder & CEO</p>
               <p className="text-gray-600 mb-4">
-                With over 20 years of experience in real estate, Michael founded Hapjay Real Estate to transform the client experience.
+                With over 20 years of experience in real estate, Happy Leonard founded Hapjay Real Estate to transform the client experience.
               </p>
               <div className="flex space-x-3">
                 <a href="#" className="text-gray-500 hover:text-realestate-navy">
@@ -150,11 +170,6 @@ const AboutUs = () => {
                 <a href="#" className="text-gray-500 hover:text-realestate-navy">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
-                  </svg>
-                </a>
-                <a href="#" className="text-gray-500 hover:text-realestate-navy">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
                   </svg>
                 </a>
               </div>
@@ -185,11 +200,6 @@ const AboutUs = () => {
                     <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
                   </svg>
                 </a>
-                <a href="#" className="text-gray-500 hover:text-realestate-navy">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-                  </svg>
-                </a>
               </div>
             </div>
             
@@ -216,11 +226,6 @@ const AboutUs = () => {
                 <a href="#" className="text-gray-500 hover:text-realestate-navy">
                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
-                  </svg>
-                </a>
-                <a href="#" className="text-gray-500 hover:text-realestate-navy">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
                   </svg>
                 </a>
               </div>

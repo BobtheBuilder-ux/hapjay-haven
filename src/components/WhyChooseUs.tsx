@@ -1,26 +1,31 @@
 
-import { Home, Search, Shield, Users } from "lucide-react";
+import { Home, Search, Shield, Users, CheckCircle } from "lucide-react";
 
 const features = [
   {
-    title: "Expert Local Knowledge",
-    description: "Our team has years of experience and deep knowledge of the local real estate market.",
+    title: "Unmatched Local Expertise",
+    description: "Years of experience in Abuja's dynamic real estate market.",
     icon: Home
   },
   {
-    title: "Personalized Service",
-    description: "We provide tailored solutions to meet each client's unique needs and preferences.",
-    icon: Users
-  },
-  {
-    title: "Advanced Property Search",
-    description: "Our cutting-edge search tools help you find exactly what you're looking for.",
+    title: "Premium Listings",
+    description: "Wide range of premium properties from luxurious homes to commercial spaces.",
     icon: Search
   },
   {
-    title: "Trusted & Secure",
-    description: "We maintain the highest standards of integrity and security in every transaction.",
+    title: "Client-Centered Approach",
+    description: "Your satisfaction is our priority in every transaction.",
+    icon: Users
+  },
+  {
+    title: "Transparency and Trust",
+    description: "Committed to ethical practices and building lasting relationships.",
     icon: Shield
+  },
+  {
+    title: "Comprehensive Services",
+    description: "End-to-end real estate services including property management.",
+    icon: CheckCircle
   }
 ];
 
@@ -35,7 +40,7 @@ const WhyChooseUs = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <div 
               key={index} 
