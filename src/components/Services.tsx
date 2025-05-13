@@ -1,5 +1,5 @@
 
-import { PlaneDeparture, AlarmClock, Target, LayoutGrid, Compass, PenTool, Building, Home, Palmtree } from "lucide-react";
+import { PlaneIcon, AlarmClock, Target, LayoutGrid, Compass, PenTool, Building, Home, Palmtree } from "lucide-react";
 
 const services = [
   {
@@ -11,7 +11,7 @@ const services = [
       "Creation of master planned urban communities",
       "Resolution of core issues in demand and supply"
     ],
-    icon: PlaneDeparture
+    icon: PlaneIcon
   },
   {
     id: "02",
