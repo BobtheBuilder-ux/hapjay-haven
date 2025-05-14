@@ -13,112 +13,8 @@ import {
 import { MapPin, Bed, Bath, Square } from "lucide-react";
 import PropertySearch from "./PropertySearch";
 import { Property } from "@/types/property";
-
-// Sample property data for initial load
-const initialProperties: Property[] = [
-  {
-    id: 1,
-    title: "Modern Luxury Villa",
-    description: "Stunning modern villa with panoramic views and premium finishes",
-    price: "$1,250,000",
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Beverly Hills, CA",
-    beds: 5,
-    baths: 4,
-    sqft: 4200,
-    lotSize: "0.5 acres",
-    yearBuilt: 2020,
-    type: "Luxury",
-    status: "For Sale",
-    featured: true
-  },
-  {
-    id: 2,
-    title: "Downtown Penthouse",
-    description: "Elegant penthouse apartment with city skyline views",
-    price: "$850,000",
-    image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Los Angeles, CA",
-    beds: 3,
-    baths: 2,
-    sqft: 1800,
-    lotSize: "N/A",
-    yearBuilt: 2018,
-    type: "Residential",
-    status: "For Sale",
-    featured: true
-  },
-  {
-    id: 3,
-    title: "Waterfront Estate",
-    description: "Breathtaking waterfront property with private dock",
-    price: "$2,350,000",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Malibu, CA",
-    beds: 6,
-    baths: 5,
-    sqft: 5500,
-    lotSize: "1.2 acres",
-    yearBuilt: 2015,
-    type: "Luxury",
-    status: "For Sale",
-    featured: true
-  },
-  {
-    id: 4,
-    title: "Contemporary Townhouse",
-    description: "Modern townhouse with rooftop terrace in prime location",
-    price: "$720,000",
-    image: "https://images.unsplash.com/photo-1600566753051-f0b4f1d62bd3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1600566753051-f0b4f1d62bd3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Venice, CA",
-    beds: 3,
-    baths: 2.5,
-    sqft: 1950,
-    lotSize: "0.1 acres",
-    yearBuilt: 2019,
-    type: "Residential",
-    status: "For Sale",
-    featured: false
-  },
-  {
-    id: 5,
-    title: "Urban Loft Apartment",
-    description: "Industrial-style loft with high ceilings and exposed brick",
-    price: "$3,500/mo",
-    image: "https://images.unsplash.com/photo-1559599189-fe84dea4eb79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1559599189-fe84dea4eb79?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Downtown LA, CA",
-    beds: 2,
-    baths: 2,
-    sqft: 1200,
-    lotSize: "N/A",
-    yearBuilt: 2017,
-    type: "Rental",
-    status: "For Rent",
-    featured: false
-  },
-  {
-    id: 6,
-    title: "Mountain Retreat",
-    description: "Secluded cabin with stunning mountain views and modern amenities",
-    price: "$950,000",
-    image: "https://images.unsplash.com/photo-1542718610-a1d656d1884c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1542718610-a1d656d1884c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Big Bear, CA",
-    beds: 4,
-    baths: 3,
-    sqft: 2800,
-    lotSize: "0.8 acres",
-    yearBuilt: 2016,
-    type: "Residential",
-    status: "For Sale",
-    featured: false
-  }
-];
+import { getProperties } from "@/services/propertyService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PropertyCard = ({ property }: { property: Property }) => {
   return (
@@ -167,21 +63,23 @@ const PropertyCard = ({ property }: { property: Property }) => {
 const PropertyListing = () => {
   const [sortBy, setSortBy] = useState("featured");
   const [viewType, setViewType] = useState("grid");
-  const [properties, setProperties] = useState<Property[]>(initialProperties);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    // Load properties from localStorage if available
-    const storedProperties = localStorage.getItem('properties');
-    if (storedProperties) {
+    const fetchProperties = async () => {
+      setLoading(true);
       try {
-        const parsedProperties = JSON.parse(storedProperties);
-        if (parsedProperties.length > 0) {
-          setProperties(parsedProperties);
-        }
+        const fetchedProperties = await getProperties();
+        setProperties(fetchedProperties);
       } catch (error) {
-        console.error('Error parsing properties:', error);
+        console.error('Error fetching properties:', error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+    
+    fetchProperties();
   }, []);
   
   // Sort properties based on selected option
@@ -248,18 +146,50 @@ const PropertyListing = () => {
             {/* Results count */}
             <p className="mb-6 text-gray-600">Showing {properties.length} properties</p>
             
-            {/* Property grid */}
-            <div className={`grid gap-6 ${
-              viewType === "grid" 
-                ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
-                : "grid-cols-1"
-            }`}>
-              {sortedProperties.map((property) => (
-                <Link key={property.id} to={`/properties/${property.id}`}>
-                  <PropertyCard property={property} />
-                </Link>
-              ))}
-            </div>
+            {/* Loading state */}
+            {loading ? (
+              <div className={`grid gap-6 ${
+                viewType === "grid" 
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+                  : "grid-cols-1"
+              }`}>
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <Card key={i} className="h-[400px]">
+                    <div className="h-[230px]">
+                      <Skeleton className="h-full w-full" />
+                    </div>
+                    <CardContent className="p-4">
+                      <Skeleton className="h-4 w-full mb-2" />
+                      <Skeleton className="h-4 w-3/4 mb-4" />
+                      <Skeleton className="h-4 w-1/2 mb-6" />
+                      <div className="flex justify-between">
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-4 w-1/4" />
+                        <Skeleton className="h-4 w-1/4" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className={`grid gap-6 ${
+                viewType === "grid" 
+                  ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3" 
+                  : "grid-cols-1"
+              }`}>
+                {sortedProperties.length > 0 ? (
+                  sortedProperties.map((property) => (
+                    <Link key={property.id} to={`/properties/${property.id}`}>
+                      <PropertyCard property={property} />
+                    </Link>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-12">
+                    <p className="text-lg text-gray-500">No properties found. Please try a different search.</p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

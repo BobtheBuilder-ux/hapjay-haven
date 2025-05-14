@@ -27,141 +27,91 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ContactSection from "./ContactSection";
-
-// Sample property data - in a real app this would come from an API
-const properties = [
-  {
-    id: 1,
-    title: "Modern Luxury Villa",
-    description: "This stunning modern villa offers panoramic views and premium finishes throughout. Featuring an open floor plan with floor-to-ceiling windows, gourmet kitchen with top-of-the-line appliances, and a private pool with outdoor entertaining area. The primary suite includes a spa-like bathroom and walk-in closet. Additional features include smart home technology, a three-car garage, and beautifully landscaped grounds.",
-    price: "$1,250,000",
-    images: [
-      "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-    ],
-    location: "Beverly Hills, CA",
-    address: "123 Luxury Lane, Beverly Hills, CA 90210",
-    beds: 5,
-    baths: 4,
-    sqft: 4200,
-    lotSize: "0.5 acres",
-    yearBuilt: 2020,
-    type: "Luxury",
-    status: "For Sale",
-    features: [
-      "Private Pool",
-      "Smart Home Technology",
-      "Gourmet Kitchen",
-      "Walk-in Closets",
-      "Home Office",
-      "Home Theater",
-      "Wine Cellar",
-      "Three-Car Garage",
-      "Outdoor Kitchen",
-      "Fireplace"
-    ],
-    agent: {
-      name: "Jessica Parker",
-      phone: "(555) 123-4567",
-      email: "jessica@hapjayrealestate.com",
-      image: "https://randomuser.me/api/portraits/women/44.jpg"
-    }
-  },
-  {
-    id: 2,
-    title: "Downtown Penthouse",
-    description: "Elegant penthouse apartment with city skyline views. This luxury penthouse features an open concept living area, chef's kitchen with premium appliances, and a large private terrace perfect for entertaining. The primary bedroom includes a custom walk-in closet and en-suite bathroom with soaking tub. Building amenities include 24-hour concierge, fitness center, pool, and secure parking.",
-    price: "$850,000",
-    images: [
-      "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-    ],
-    location: "Los Angeles, CA",
-    address: "789 High Rise Blvd, Los Angeles, CA 90017",
-    beds: 3,
-    baths: 2,
-    sqft: 1800,
-    lotSize: "N/A",
-    yearBuilt: 2018,
-    type: "Residential",
-    status: "For Sale",
-    features: [
-      "City Views",
-      "Private Terrace",
-      "24-hour Concierge",
-      "Fitness Center",
-      "Pool",
-      "Secure Parking",
-      "Walk-in Closet",
-      "Soaking Tub",
-      "High Ceilings",
-      "Premium Appliances"
-    ],
-    agent: {
-      name: "Michael Torres",
-      phone: "(555) 987-6543",
-      email: "michael@hapjayrealestate.com",
-      image: "https://randomuser.me/api/portraits/men/32.jpg"
-    }
-  },
-  {
-    id: 3,
-    title: "Waterfront Estate",
-    description: "Breathtaking waterfront property with private dock. This exceptional estate offers luxury living with panoramic water views from nearly every room. The gourmet kitchen features custom cabinetry, top-of-the-line appliances, and a large island. The spacious primary suite includes a sitting area, dual walk-in closets, and a spa-like bathroom. Additional highlights include a home theater, wine cellar, infinity pool, and beautifully landscaped grounds leading to a private dock.",
-    price: "$2,350,000",
-    images: [
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1602343168117-bb8ffe3e2e9f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"
-    ],
-    location: "Malibu, CA",
-    address: "456 Oceanfront Drive, Malibu, CA 90265",
-    beds: 6,
-    baths: 5,
-    sqft: 5500,
-    lotSize: "1.2 acres",
-    yearBuilt: 2015,
-    type: "Luxury",
-    status: "For Sale",
-    features: [
-      "Waterfront",
-      "Private Dock",
-      "Infinity Pool",
-      "Home Theater",
-      "Wine Cellar",
-      "Gourmet Kitchen",
-      "Dual Walk-in Closets",
-      "Spa Bathroom",
-      "Smart Home Technology",
-      "Outdoor Entertainment Area"
-    ],
-    agent: {
-      name: "Robert Johnson",
-      phone: "(555) 456-7890",
-      email: "robert@hapjayrealestate.com",
-      image: "https://randomuser.me/api/portraits/men/68.jpg"
-    }
-  }
-];
+import { Property } from "@/types/property";
+import { getProperties } from "@/services/propertyService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PropertyDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
   const propertyId = parseInt(id || "1");
-  const property = properties.find(p => p.id === propertyId) || properties[0];
+  const [property, setProperty] = useState<Property | null>(null);
+  const [relatedProperties, setRelatedProperties] = useState<Property[]>([]);
   const [activeImage, setActiveImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Reset active image when property changes
     setActiveImage(0);
     // Scroll to top when component mounts
     window.scrollTo(0, 0);
-  }, [propertyId]);
+    
+    const fetchPropertyData = async () => {
+      setLoading(true);
+      try {
+        const allProperties = await getProperties();
+        
+        // Find the current property
+        const currentProperty = allProperties.find(p => p.id === propertyId);
+        setProperty(currentProperty || null);
+        
+        // Find related properties (same type or location)
+        if (currentProperty) {
+          const related = allProperties
+            .filter(p => 
+              p.id !== propertyId && 
+              (p.type === currentProperty.type || p.location === currentProperty.location)
+            )
+            .slice(0, 2);
+          setRelatedProperties(related);
+        }
+      } catch (error) {
+        console.error('Error fetching property:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load property details",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchPropertyData();
+  }, [propertyId, toast]);
+
+  // Loading skeleton
+  if (loading) {
+    return (
+      <div className="py-12 bg-realestate-silver">
+        <div className="container-custom">
+          <div className="mb-8">
+            <Skeleton className="h-10 w-3/4 mb-2" />
+            <Skeleton className="h-5 w-1/2 mb-4" />
+          </div>
+          <div className="mb-8">
+            <Skeleton className="h-[400px] w-full rounded-lg" />
+            <div className="grid grid-cols-4 gap-2 mt-2">
+              {[1, 2, 3, 4].map(i => (
+                <Skeleton key={i} className="h-20 w-full rounded-md" />
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="md:col-span-2">
+              <Skeleton className="h-[500px] w-full rounded-lg" />
+            </div>
+            <div>
+              <Skeleton className="h-[300px] w-full rounded-lg mb-6" />
+              <Skeleton className="h-[300px] w-full rounded-lg" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // If property not found
   if (!property) {
@@ -200,7 +150,7 @@ const PropertyDetail = () => {
   const handleContactAgent = () => {
     toast({
       title: "Contact request sent",
-      description: `Your request to contact ${property.agent.name} has been received.`,
+      description: `Your request to contact the agent has been received.`,
     });
   };
 
@@ -227,7 +177,7 @@ const PropertyDetail = () => {
           
           <div className="flex items-center text-gray-600 mb-4">
             <MapPin className="h-5 w-5 mr-1 text-realestate-blue" />
-            <span>{property.address}</span>
+            <span>{property.location}</span>
           </div>
 
           {/* Action buttons */}
@@ -266,7 +216,7 @@ const PropertyDetail = () => {
         <div className="mb-8">
           <Carousel className="w-full">
             <CarouselContent>
-              {property.images.map((image, index) => (
+              {(property.images || [property.image]).map((image, index) => (
                 <CarouselItem key={index}>
                   <div className="relative aspect-video overflow-hidden rounded-lg">
                     <img
@@ -284,7 +234,7 @@ const PropertyDetail = () => {
           
           {/* Thumbnail Gallery */}
           <div className="grid grid-cols-4 gap-2 mt-2">
-            {property.images.map((image, index) => (
+            {(property.images || [property.image]).map((image, index) => (
               <div
                 key={index}
                 className={`aspect-video cursor-pointer rounded-md overflow-hidden border-2 ${
@@ -349,55 +299,61 @@ const PropertyDetail = () => {
                   </div>
                   <div className="flex flex-col items-center p-3 bg-realestate-lightblue rounded-lg">
                     <Home className="h-6 w-6 text-realestate-navy mb-2" />
-                    <span className="text-lg font-semibold">{property.lotSize}</span>
+                    <span className="text-lg font-semibold">{property.lotSize || 'N/A'}</span>
                     <span className="text-sm text-gray-500">Lot Size</span>
                   </div>
                 </div>
 
                 {/* Similar properties suggestion */}
-                <div className="mt-8 pt-6 border-t">
-                  <h3 className="text-xl font-semibold mb-4">Similar Properties You Might Like</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {properties.filter(p => p.id !== property.id).slice(0, 2).map(similarProperty => (
-                      <div 
-                        key={similarProperty.id} 
-                        className="flex gap-3 p-3 rounded-lg bg-realestate-lightblue cursor-pointer hover:shadow-md transition-shadow"
-                        onClick={() => navigate(`/properties/${similarProperty.id}`)}
-                      >
-                        <div className="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden">
-                          <img 
-                            src={similarProperty.images[0]} 
-                            alt={similarProperty.title}
-                            className="w-full h-full object-cover" 
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-sm line-clamp-1">{similarProperty.title}</h4>
-                          <p className="text-realestate-navy font-semibold text-sm">{similarProperty.price}</p>
-                          <div className="flex items-center text-xs text-gray-600">
-                            <Bed className="h-3 w-3 mr-1" />
-                            <span>{similarProperty.beds}</span>
-                            <span className="mx-1">•</span>
-                            <Bath className="h-3 w-3 mr-1" />
-                            <span>{similarProperty.baths}</span>
+                {relatedProperties.length > 0 && (
+                  <div className="mt-8 pt-6 border-t">
+                    <h3 className="text-xl font-semibold mb-4">Similar Properties You Might Like</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {relatedProperties.map(similarProperty => (
+                        <div 
+                          key={similarProperty.id} 
+                          className="flex gap-3 p-3 rounded-lg bg-realestate-lightblue cursor-pointer hover:shadow-md transition-shadow"
+                          onClick={() => navigate(`/properties/${similarProperty.id}`)}
+                        >
+                          <div className="w-20 h-20 flex-shrink-0 rounded-md overflow-hidden">
+                            <img 
+                              src={similarProperty.image || (similarProperty.images && similarProperty.images[0])} 
+                              alt={similarProperty.title}
+                              className="w-full h-full object-cover" 
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-sm line-clamp-1">{similarProperty.title}</h4>
+                            <p className="text-realestate-navy font-semibold text-sm">{similarProperty.price}</p>
+                            <div className="flex items-center text-xs text-gray-600">
+                              <Bed className="h-3 w-3 mr-1" />
+                              <span>{similarProperty.beds}</span>
+                              <span className="mx-1">•</span>
+                              <Bath className="h-3 w-3 mr-1" />
+                              <span>{similarProperty.baths}</span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </TabsContent>
               
               <TabsContent value="features" className="bg-white p-6 rounded-lg shadow-md">
                 <h2 className="text-2xl font-semibold mb-4">Property Features</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
-                  {property.features.map((feature, index) => (
-                    <div key={index} className="flex items-center">
-                      <div className="h-2 w-2 rounded-full bg-realestate-blue mr-2"></div>
-                      <span>{feature}</span>
-                    </div>
-                  ))}
-                </div>
+                {property.features && property.features.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                    {property.features.map((feature, index) => (
+                      <div key={index} className="flex items-center">
+                        <div className="h-2 w-2 rounded-full bg-realestate-blue mr-2"></div>
+                        <span>{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">No features listed for this property.</p>
+                )}
               </TabsContent>
               
               <TabsContent value="details" className="bg-white p-6 rounded-lg shadow-md">
@@ -410,15 +366,15 @@ const PropertyDetail = () => {
                     </div>
                     <div className="flex justify-between py-2 border-b">
                       <span className="font-medium">Year Built:</span>
-                      <span>{property.yearBuilt}</span>
+                      <span>{property.yearBuilt || 'N/A'}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b">
                       <span className="font-medium">Square Footage:</span>
-                      <span>{property.sqft.toLocaleString()}</span>
+                      <span>{property.sqft?.toLocaleString() || 'N/A'}</span>
                     </div>
                     <div className="flex justify-between py-2 border-b">
                       <span className="font-medium">Lot Size:</span>
-                      <span>{property.lotSize}</span>
+                      <span>{property.lotSize || 'N/A'}</span>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -450,23 +406,23 @@ const PropertyDetail = () => {
               <h3 className="text-xl font-semibold mb-4">Property Agent</h3>
               <div className="flex items-center mb-4">
                 <img 
-                  src={property.agent.image} 
-                  alt={property.agent.name}
+                  src={property.agent?.image || "https://randomuser.me/api/portraits/lego/1.jpg"} 
+                  alt="Agent"
                   className="w-16 h-16 rounded-full object-cover mr-4"
                 />
                 <div>
-                  <h4 className="font-semibold">{property.agent.name}</h4>
+                  <h4 className="font-semibold">{property.agent?.name || "Agent Information"}</h4>
                   <p className="text-sm text-gray-500">Hapjay Real Estate</p>
                 </div>
               </div>
               <div className="space-y-3">
                 <div className="flex items-center">
                   <Phone className="h-5 w-5 text-realestate-navy mr-2" />
-                  <span>{property.agent.phone}</span>
+                  <span>{property.agent?.phone || "(555) 123-4567"}</span>
                 </div>
                 <div className="flex items-center">
                   <Mail className="h-5 w-5 text-realestate-navy mr-2" />
-                  <span>{property.agent.email}</span>
+                  <span>{property.agent?.email || "agent@hapjayrealestate.com"}</span>
                 </div>
               </div>
               <div className="mt-6 space-y-3">
@@ -503,7 +459,7 @@ const PropertyDetail = () => {
                   <label className="text-sm font-medium">Down Payment (20%)</label>
                   <input 
                     type="text" 
-                    value={`$${(parseInt(property.price.replace(/[^0-9]/g, '')) * 0.2).toLocaleString()}`}
+                    value={`$${Math.floor(parseInt(property.price.replace(/[^0-9]/g, '')) * 0.2).toLocaleString()}`}
                     readOnly
                     className="w-full p-2 border rounded-md bg-gray-50"
                   />

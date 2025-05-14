@@ -5,55 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Bed, Bath, Square } from "lucide-react";
 import { Property } from "@/types/property";
 import { useState, useEffect } from "react";
-
-// Sample data for initial rendering
-const initialProperties: Property[] = [
-  {
-    id: 1,
-    title: "Modern Luxury Villa",
-    description: "Stunning modern villa with panoramic views and premium finishes",
-    price: "$1,250,000",
-    image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Beverly Hills, CA",
-    beds: 5,
-    baths: 4,
-    sqft: 4200,
-    type: "Luxury",
-    status: "For Sale",
-    featured: true
-  },
-  {
-    id: 2,
-    title: "Downtown Penthouse",
-    description: "Elegant penthouse apartment with city skyline views",
-    price: "$850,000",
-    image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Los Angeles, CA",
-    beds: 3,
-    baths: 2,
-    sqft: 1800,
-    type: "Residential",
-    status: "For Sale",
-    featured: true
-  },
-  {
-    id: 3,
-    title: "Waterfront Estate",
-    description: "Breathtaking waterfront property with private dock",
-    price: "$2,350,000",
-    image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-    images: ["https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80"],
-    location: "Malibu, CA",
-    beds: 6,
-    baths: 5,
-    sqft: 5500,
-    type: "Luxury",
-    status: "For Sale",
-    featured: true
-  }
-];
+import { getFeaturedProperties } from "@/services/propertyService";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PropertyCard = ({
   property
@@ -104,23 +57,23 @@ const PropertyCard = ({
 };
 
 const FeaturedProperties = () => {
-  const [properties, setProperties] = useState<Property[]>(initialProperties);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // We'll try to load properties from localStorage if available
-    const storedProperties = localStorage.getItem('properties');
-    if (storedProperties) {
+    const fetchFeaturedProperties = async () => {
+      setLoading(true);
       try {
-        const parsedProperties = JSON.parse(storedProperties);
-        // Filter for featured properties
-        const featuredProps = parsedProperties.filter((p: Property) => p.featured);
-        if (featuredProps.length > 0) {
-          setProperties(featuredProps);
-        }
+        const featuredProperties = await getFeaturedProperties();
+        setProperties(featuredProperties);
       } catch (error) {
-        console.error('Error parsing properties:', error);
+        console.error('Error fetching featured properties:', error);
+      } finally {
+        setLoading(false);
       }
-    }
+    };
+    
+    fetchFeaturedProperties();
   }, []);
 
   return (
@@ -133,13 +86,41 @@ const FeaturedProperties = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {properties.map(property => (
-            <Link key={property.id} to={`/properties/${property.id}`}>
-              <PropertyCard property={property} />
-            </Link>
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="h-[400px]">
+                <div className="h-[230px]">
+                  <Skeleton className="h-full w-full" />
+                </div>
+                <CardContent className="p-4">
+                  <Skeleton className="h-4 w-full mb-2" />
+                  <Skeleton className="h-4 w-3/4 mb-4" />
+                  <Skeleton className="h-4 w-1/2 mb-6" />
+                  <div className="flex justify-between">
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                    <Skeleton className="h-4 w-1/4" />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {properties.length > 0 ? (
+              properties.map(property => (
+                <Link key={property.id} to={`/properties/${property.id}`}>
+                  <PropertyCard property={property} />
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-3 text-center py-8">
+                <p className="text-lg text-gray-500">No featured properties found.</p>
+              </div>
+            )}
+          </div>
+        )}
         
         <div className="text-center mt-12">
           <Link to="/properties" className="inline-flex items-center px-6 py-3 border border-realestate-navy rounded-md text-realestate-navy font-medium hover:bg-realestate-navy hover:text-white transition-colors">
