@@ -6,7 +6,40 @@ import { useToast } from "@/hooks/use-toast";
 import { signInWithEmailAndPassword, signInWithGoogle } from "@/services/authService";
 import { useNavigate } from "react-router-dom";
 import { LogIn } from "lucide-react";
-import { Google } from "lucide-react";
+
+// Custom Google icon since it's not available in lucide-react
+const GoogleIcon = () => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    width="24" 
+    height="24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className="h-4 w-4"
+  >
+    <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" stroke="none" fill="none" />
+    <path d="M19.5 12h-15" fill="none" />
+    <path d="M15 8l-5 8" fill="none" />
+    <path d="M15 16l-5-8" fill="none" />
+    <path d="M9 12c0-4.418 3.5-8 8-8" stroke="none" fill="none" />
+    <path
+      d="M12 2.252a10 10 0 0 1 8.571 4.615A9.993 9.993 0 0 1 22 12a10 10 0 1 1-17.52-6.623"
+      fill="none"
+    />
+    <path
+      d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2m0 0a10 10 0 0 0-2 19.834"
+      fill="none"
+    />
+    <path
+      d="M21.806 11H12v2h3.926a4 4 0 1 1-.878-3.850"
+      fill="none"
+    />
+  </svg>
+);
 
 const AdminLogin = () => {
   const { toast } = useToast();
@@ -175,7 +208,7 @@ const AdminLogin = () => {
                   "Signing in..."
                 ) : (
                   <>
-                    <Google className="mr-2 h-4 w-4" /> Sign in with Google
+                    <GoogleIcon /> <span className="ml-2">Sign in with Google</span>
                   </>
                 )}
               </Button>
