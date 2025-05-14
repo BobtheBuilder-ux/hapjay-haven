@@ -38,11 +38,6 @@ export const usePropertyForm = (properties: Property[], setProperties: React.Dis
           description: `The property '${property.title}' has been updated.`,
         });
       } else {
-        // Adding new property to Firebase
-        // Generate temporary ID
-        const tempId = Date.now();
-        property.id = tempId;
-        
         // Add to Firebase and get the updated property with Firebase ID
         const addedProperty = await firebaseAddProperty(property);
         
@@ -61,7 +56,7 @@ export const usePropertyForm = (properties: Property[], setProperties: React.Dis
       console.error("Error saving property:", error);
       toast({
         title: "Error",
-        description: "Failed to save the property. Please try again.",
+        description: "Failed to save the property due to permission issues. Please check your Firebase rules.",
         variant: "destructive",
       });
     } finally {
@@ -99,7 +94,7 @@ export const usePropertyForm = (properties: Property[], setProperties: React.Dis
       console.error("Error deleting property:", error);
       toast({
         title: "Error",
-        description: "Failed to delete the property. Please try again.",
+        description: "Failed to delete the property. Please check your permissions.",
         variant: "destructive",
       });
     } finally {

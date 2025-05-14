@@ -1,7 +1,7 @@
 
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getStorage, connectStorageEmulator } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 
@@ -29,6 +29,8 @@ isSupported().then(yes => yes && (analytics = getAnalytics(app)));
 // For development environments, you can uncomment this to use local emulators
 // if (process.env.NODE_ENV === 'development') {
 //   connectAuthEmulator(auth, 'http://localhost:9099');
+//   connectFirestoreEmulator(db, 'localhost', 8080);
+//   connectStorageEmulator(storage, 'localhost', 9199);
 // }
 
 export { app, db, storage, auth, analytics };
