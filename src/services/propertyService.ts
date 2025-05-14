@@ -1,6 +1,6 @@
 
 import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where, DocumentData, setDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where, DocumentData, setDoc, writeBatch } from "firebase/firestore";
 import { Property } from "@/types/property";
 
 const COLLECTION_NAME = "properties";
@@ -98,6 +98,29 @@ export const deleteProperty = async (id: number): Promise<void> => {
     await deleteDoc(docRef);
   } catch (error) {
     console.error("Error deleting property:", error);
+    throw error;
+  }
+};
+
+// Bulk upload properties - will replace existing ones with same ID
+export const bulkUploadProperties = async (properties: Property[]): Promise<void> => {
+  try {
+    const batch = writeBatch(db);
+    
+    // Process each property
+    for (const property of properties) {
+      if (!property.id) {
+        property.id = Date.now() + Math.floor(Math.random() * 1000);
+      }
+      
+      const docRef = doc(db, COLLECTION_NAME, property.id.toString());
+      batch.set(docRef, toFirebaseProperty(property));
+    }
+    
+    // Commit the batch
+    await batch.commit();
+  } catch (error) {
+    console.error("Error bulk uploading properties:", error);
     throw error;
   }
 };

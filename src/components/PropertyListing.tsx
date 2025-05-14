@@ -15,16 +15,19 @@ import PropertySearch from "./PropertySearch";
 import { Property } from "@/types/property";
 import { getProperties } from "@/services/propertyService";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AspectRatio } from "./ui/aspect-ratio";
 
 const PropertyCard = ({ property }: { property: Property }) => {
   return (
     <Card className="property-card group h-full">
       <div className="property-card-image">
-        <img
-          src={property.image || (property.images && property.images[0])}
-          alt={property.title}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-        />
+        <AspectRatio ratio={4/3}>
+          <img
+            src={property.image || (property.images && property.images[0])}
+            alt={property.title}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          />
+        </AspectRatio>
         <Badge className="property-badge bg-realestate-gold text-realestate-navy">
           {property.type}
         </Badge>
@@ -63,7 +66,8 @@ const PropertyCard = ({ property }: { property: Property }) => {
 const PropertyListing = () => {
   const [sortBy, setSortBy] = useState("featured");
   const [viewType, setViewType] = useState("grid");
-  const [properties, setProperties] = useState<Property[]>([]);
+  const [allProperties, setAllProperties] = useState<Property[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
@@ -71,7 +75,8 @@ const PropertyListing = () => {
       setLoading(true);
       try {
         const fetchedProperties = await getProperties();
-        setProperties(fetchedProperties);
+        setAllProperties(fetchedProperties);
+        setFilteredProperties(fetchedProperties);
       } catch (error) {
         console.error('Error fetching properties:', error);
       } finally {
@@ -83,7 +88,7 @@ const PropertyListing = () => {
   }, []);
   
   // Sort properties based on selected option
-  const sortedProperties = [...properties].sort((a, b) => {
+  const sortedProperties = [...filteredProperties].sort((a, b) => {
     switch (sortBy) {
       case "featured":
         return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
@@ -98,13 +103,20 @@ const PropertyListing = () => {
     }
   });
 
+  const handleFilter = (filtered: Property[]) => {
+    setFilteredProperties(filtered);
+  };
+
   return (
     <div className="py-12 bg-realestate-silver">
       <div className="container-custom">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar with search filters */}
           <div className="lg:col-span-1">
-            <PropertySearch />
+            <PropertySearch 
+              onFilter={handleFilter}
+              allProperties={allProperties} 
+            />
           </div>
           
           {/* Property listing */}
@@ -144,7 +156,7 @@ const PropertyListing = () => {
             </div>
             
             {/* Results count */}
-            <p className="mb-6 text-gray-600">Showing {properties.length} properties</p>
+            <p className="mb-6 text-gray-600">Showing {filteredProperties.length} properties</p>
             
             {/* Loading state */}
             {loading ? (

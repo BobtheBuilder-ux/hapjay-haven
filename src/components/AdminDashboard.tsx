@@ -74,24 +74,25 @@ const AdminDashboard = () => {
   };
 
   // Load properties from Firebase
-  useEffect(() => {
-    const fetchProperties = async () => {
-      setLoading(true);
-      try {
-        const fetchedProperties = await getProperties();
-        setProperties(fetchedProperties);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load properties. Please try again.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProperties = async () => {
+    setLoading(true);
+    try {
+      const fetchedProperties = await getProperties();
+      setProperties(fetchedProperties);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load properties. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Initial data loading
+  useEffect(() => {
     fetchProperties();
   }, [toast]);
 
@@ -140,6 +141,7 @@ const AdminDashboard = () => {
               onEditProperty={handleEditProperty}
               onDeleteProperty={handleDeleteProperty}
               loading={loading || propertyLoading}
+              onRefresh={fetchProperties}
             />
           </TabsContent>
           
