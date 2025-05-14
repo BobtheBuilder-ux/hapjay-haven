@@ -20,9 +20,13 @@ import { getProperties } from "@/services/propertyService";
 import { usePropertyForm } from "@/hooks/usePropertyForm";
 import { useInquiries } from "@/hooks/useInquiries";
 import { useAppointments } from "@/hooks/useAppointments";
+import { signOut } from "@/services/authService";
+import { useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 
 const AdminDashboard = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,6 +54,24 @@ const AdminDashboard = () => {
     handleEditProperty,
     handleDeleteProperty
   } = usePropertyForm(properties, setProperties);
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of the admin dashboard.",
+      });
+      navigate("/admin");
+    } catch (error) {
+      console.error("Error signing out:", error);
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Load properties from Firebase
   useEffect(() => {
@@ -76,7 +98,16 @@ const AdminDashboard = () => {
   return (
     <div className="bg-realestate-silver min-h-screen p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <Button 
+            variant="outline" 
+            onClick={handleSignOut}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" /> Sign Out
+          </Button>
+        </div>
         
         {/* Stats Overview */}
         <AdminStats properties={properties} />
