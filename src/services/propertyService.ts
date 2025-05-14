@@ -1,6 +1,6 @@
 
 import { db } from "@/lib/firebase";
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where, DocumentData } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy, where, DocumentData, setDoc } from "firebase/firestore";
 import { Property } from "@/types/property";
 
 const COLLECTION_NAME = "properties";
@@ -55,9 +55,9 @@ export const addProperty = async (property: Property): Promise<Property> => {
     
     const propertyToSave = toFirebaseProperty(property);
     
-    // Use the property.id as the document ID to ensure consistency
-    const docRef = await addDoc(
-      collection(db, COLLECTION_NAME), 
+    // Use setDoc with the property.id as the document ID to ensure consistency
+    await setDoc(
+      doc(db, COLLECTION_NAME, property.id.toString()), 
       propertyToSave
     );
     

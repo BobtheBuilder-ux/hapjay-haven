@@ -52,11 +52,14 @@ export const usePropertyForm = (properties: Property[], setProperties: React.Dis
       
       // Close form
       setFormOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving property:", error);
       toast({
         title: "Error",
-        description: "Failed to save the property due to permission issues. Please check your Firebase rules.",
+        description: 
+          error.message === "Missing or insufficient permissions" 
+            ? "Permission denied. Please check your Firebase security rules." 
+            : `Failed to save the property. ${error.message || "Please try again."}`,
         variant: "destructive",
       });
     } finally {
@@ -90,11 +93,14 @@ export const usePropertyForm = (properties: Property[], setProperties: React.Dis
         title: "Property Deleted",
         description: "The property has been removed from the system.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error deleting property:", error);
       toast({
         title: "Error",
-        description: "Failed to delete the property. Please check your permissions.",
+        description: 
+          error.message === "Missing or insufficient permissions" 
+            ? "Permission denied. Please check your Firebase security rules." 
+            : `Failed to delete the property. ${error.message || "Please try again."}`,
         variant: "destructive",
       });
     } finally {

@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useCallback } from "react";
 import { 
   Form,
   FormControl,
@@ -22,7 +23,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { Property } from "@/types/property";
 import { useToast } from "@/hooks/use-toast";
-import { X, Loader2 } from "lucide-react";
+import { X, Loader2, Upload, Image as ImageIcon } from "lucide-react";
 
 interface PropertyFormProps {
   onSubmit: (property: Property) => void;
@@ -35,6 +36,7 @@ const PropertyForm = ({ onSubmit, onCancel, initialData, isSubmitting = false }:
   const { toast } = useToast();
   const [images, setImages] = useState<string[]>(initialData?.images || []);
   const [imageUrl, setImageUrl] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
 
   const form = useForm<Property>({
     defaultValues: initialData || {
@@ -70,6 +72,62 @@ const PropertyForm = ({ onSubmit, onCancel, initialData, isSubmitting = false }:
     setImages(newImages);
     form.setValue("images", newImages);
   };
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    
+    const items = e.dataTransfer.items;
+    if (items) {
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'string' && items[i].type.match('^text/plain')) {
+          items[i].getAsString((url) => {
+            // Verify it's a valid URL before adding
+            try {
+              new URL(url);
+              if (!images.includes(url)) {
+                const newImages = [...images, url];
+                setImages(newImages);
+                form.setValue("images", newImages);
+              }
+            } catch(e) {
+              toast({
+                title: "Invalid URL",
+                description: "Please provide a valid image URL",
+                variant: "destructive"
+              });
+            }
+          });
+        } else if (items[i].kind === 'string' && items[i].type.match('^text/uri-list')) {
+          items[i].getAsString((url) => {
+            if (!images.includes(url)) {
+              const newImages = [...images, url];
+              setImages(newImages);
+              form.setValue("images", newImages);
+            }
+          });
+        }
+      }
+    }
+  }, [images, form, toast]);
 
   const handleSubmit = (data: Property) => {
     if (images.length === 0) {
@@ -342,6 +400,33 @@ const PropertyForm = ({ onSubmit, onCancel, initialData, isSubmitting = false }:
             />
             <Button type="button" onClick={addImage}>Add Image</Button>
           </div>
+          
+          {/* Drag and drop area */}
+          <div 
+            className={`mt-3 border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center transition-colors ${
+              isDragging 
+                ? "border-primary bg-primary/10" 
+                : "border-gray-300 hover:border-primary"
+            }`}
+            onDragEnter={handleDragEnter}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          >
+            <div className="text-center">
+              <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+              <div className="mt-2 flex text-sm">
+                <p className="text-gray-500">
+                  <span className="font-semibold text-primary">Drag and drop</span> image URLs here or{" "}
+                  <span className="font-semibold text-primary">paste</span> them above
+                </p>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                You can drag and drop image URLs or links directly
+              </p>
+            </div>
+          </div>
+          
           <FormDescription>
             Add at least one image URL. The first image will be used as the main property image.
           </FormDescription>
@@ -354,6 +439,9 @@ const PropertyForm = ({ onSubmit, onCancel, initialData, isSubmitting = false }:
                     src={url} 
                     alt={`Property image ${index + 1}`} 
                     className="w-full h-24 object-cover rounded-md"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/150?text=Image+Error';
+                    }}
                   />
                   <button
                     type="button"
